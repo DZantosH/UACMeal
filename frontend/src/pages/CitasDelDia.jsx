@@ -7,7 +7,7 @@ const CitasDelDia = ({ fecha, isOpen, onClose }) => {
   const cargarCitasDelDia = useCallback(async () => {
     try {
       setLoading(true);
-      const fechaFormateada = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+      const fechaFormateada = fecha.toISOString().split('T')[0];
       
       const response = await fetch(`http://localhost:5000/api/citas/dia/${fechaFormateada}`);
       if (response.ok) {
@@ -45,14 +45,14 @@ const CitasDelDia = ({ fecha, isOpen, onClose }) => {
 
   const getEstadoBadgeClass = (estado) => {
     const clases = {
-      'Programada': 'badge-programada',
-      'Confirmada': 'badge-confirmada',
-      'En_Proceso': 'badge-en-proceso',
-      'Completada': 'badge-completada',
-      'Cancelada': 'badge-cancelada',
-      'No_Asistio': 'badge-no-asistio'
+      'Programada': 'modal-badge-programada',
+      'Confirmada': 'modal-badge-confirmada',
+      'En_Proceso': 'modal-badge-en-proceso',
+      'Completada': 'modal-badge-completada',
+      'Cancelada': 'modal-badge-cancelada',
+      'No_Asistio': 'modal-badge-no-asistio'
     };
-    return clases[estado] || 'badge-default';
+    return clases[estado] || 'modal-badge-programada';
   };
 
   const getEstadoTexto = (estado) => {
@@ -78,68 +78,72 @@ const CitasDelDia = ({ fecha, isOpen, onClose }) => {
     return iconos[tipo] || '📋';
   };
 
+  const handleOverlayClick = (e) => {
+    if (e.target.classList.contains('modal-citas-overlay')) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="citas-dia-overlay">
-      <div className="citas-dia-sidebar">
-        {/* Header */}
-        <div className="citas-dia-header">
-          <div className="fecha-info">
-            <h3>Citas del Día</h3>
-            <p className="fecha-seleccionada">
+    <div className="modal-citas-overlay" onClick={handleOverlayClick}>
+      <div className="modal-citas-container" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-citas-header">
+          <div className="modal-fecha-info">
+            <h3>📅 Citas del Día</h3>
+            <p className="modal-fecha-seleccionada">
               {formatearFecha(fecha)}
             </p>
           </div>
-          <button className="close-btn-citas" onClick={onClose}>×</button>
+          <button className="modal-close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
 
-        {/* Contenido */}
-        <div className="citas-dia-content">
+        <div className="modal-citas-content">
           {loading ? (
-            <div className="citas-loading">
+            <div className="modal-citas-loading">
               <div className="loading-spinner-small"></div>
               <p>Cargando citas...</p>
             </div>
           ) : citas.length > 0 ? (
             <>
-              <div className="citas-resumen">
-                <div className="resumen-item">
-                  <span className="resumen-numero">{citas.length}</span>
-                  <span className="resumen-texto">
-                    {citas.length === 1 ? 'Cita agendada' : 'Citas agendadas'}
-                  </span>
-                </div>
+              <div className="modal-citas-resumen">
+                <span className="modal-resumen-numero">{citas.length}</span>
+                <span className="modal-resumen-texto">
+                  {citas.length === 1 ? 'Cita Agendada' : 'Citas Agendadas'}
+                </span>
               </div>
 
-              <div className="citas-lista">
+              <div className="modal-citas-lista">
                 {citas
                   .sort((a, b) => a.hora_cita.localeCompare(b.hora_cita))
                   .map((cita) => (
-                  <div key={cita.id} className="cita-card-dia">
-                    <div className="cita-hora-tipo">
-                      <div className="hora-grande">
+                  <div key={cita.id} className="modal-cita-card">
+                    <div className="modal-cita-hora-tipo">
+                      <div className="modal-hora-grande">
                         {formatearHora(cita.hora_cita)}
                       </div>
-                      <div className="tipo-icono">
+                      <div className="modal-tipo-icono">
                         {getTipoConsultaIcon(cita.tipo_cita)}
                       </div>
                     </div>
                     
-                    <div className="cita-info-principal">
-                      <h4 className="paciente-nombre">
+                    <div className="modal-cita-info">
+                      <h4 className="modal-paciente-nombre">
                         {cita.paciente_nombre} {cita.paciente_apellido}
                       </h4>
-                      <p className="tipo-consulta">
+                      <p className="modal-tipo-consulta">
                         {cita.tipo_cita}
                       </p>
-                      <p className="doctor-info">
+                      <p className="modal-doctor-info">
                         Dr/Dra. {cita.doctor_nombre} {cita.doctor_apellido}
                       </p>
                     </div>
                     
-                    <div className="cita-estado-container">
-                      <span className={`estado-badge ${getEstadoBadgeClass(cita.estado)}`}>
+                    <div className="modal-estado-container">
+                      <span className={`modal-estado-badge ${getEstadoBadgeClass(cita.estado)}`}>
                         {getEstadoTexto(cita.estado)}
                       </span>
                     </div>
@@ -148,21 +152,23 @@ const CitasDelDia = ({ fecha, isOpen, onClose }) => {
               </div>
             </>
           ) : (
-            <div className="no-citas-dia">
-              <div className="no-citas-icon">📅</div>
+            <div className="modal-no-citas">
+              <div className="modal-no-citas-icon">📅</div>
               <h4>Sin citas agendadas</h4>
               <p>No hay citas programadas para este día</p>
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="citas-dia-footer">
-          <div className="horarios-info">
+        <div className="modal-citas-footer">
+          <div className="modal-horarios-info">
             <small>
-              <strong>Horarios de atención:</strong> 11:00 AM - 8:00 PM
+              <strong>Horarios:</strong> 11:00 AM - 8:00 PM
             </small>
           </div>
+          <button className="modal-btn-agendar" onClick={onClose}>
+            Nueva Cita
+          </button>
         </div>
       </div>
     </div>

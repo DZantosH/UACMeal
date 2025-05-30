@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './services/AuthContext';
+import Layout from './components/Layout';
 import Login from './pages/Login';
 import PanelPrincipal from './pages/PanelPrincipal';
 import Pacientes from './pages/Pacientes';
 import HistorialClinico from './pages/HistorialClinico';
 import Citas from './pages/Citas';
-import Navbar from './components/Navbar';
 import './App.css';
 
 // Componente para rutas protegidas
@@ -25,62 +25,48 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
-// Componente principal de la aplicación
+// Componente principal de la app
 const AppContent = () => {
   const { user } = useAuth();
   
   return (
-    <div className="App">
-      {user && <Navbar />}
-      <div className={user ? "main-content" : "login-content"}>
-        <Routes>
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <PanelPrincipal />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/pacientes" 
-            element={
-              <ProtectedRoute>
-                <Pacientes />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/historial/:pacienteId?" 
-            element={
-              <ProtectedRoute>
-                <HistorialClinico />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/citas" 
-            element={
-              <ProtectedRoute>
-                <Citas />
-              </ProtectedRoute>
-            } 
-          />
-          {/* Ruta por defecto - redirigir a login si no está autenticado */}
-          <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
-        </Routes>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        {/* Ruta de login */}
+        <Route 
+          path="/login" 
+          element={user ? <Navigate to="/" /> : <Login />} 
+        />
+        
+        {/* Rutas protegidas con layout */}
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          {/* Rutas anidadas que se renderizan en <Outlet /> */}
+          <Route index element={<PanelPrincipal />} />
+          <Route path="panel" element={<PanelPrincipal />} />
+          <Route path="pacientes" element={<Pacientes />} />
+          <Route path="historial" element={<HistorialClinico />} />
+          <Route path="citas" element={<Citas />} />
+        </Route>
+        
+        {/* Ruta por defecto */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 };
 
+// App principal con provider
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <AppContent />
     </AuthProvider>
   );
 }

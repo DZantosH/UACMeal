@@ -1,12 +1,9 @@
-// PanelPrincipal.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../services/AuthContext';
 import AgendarCitasSidebar from './AgendarCitasSidebar';
 import CalendarioDinamico from './CalendarioDinamico';
 
 const PanelPrincipal = () => {
-  const { user } = useAuth();
   const [showAgendarCitas, setShowAgendarCitas] = useState(false);
   const [citasHoy, setCitasHoy] = useState([]);
   const [loadingCitas, setLoadingCitas] = useState(true);
@@ -33,8 +30,6 @@ const PanelPrincipal = () => {
       setLoadingCitas(false);
     }
   };
-  // Generar calendario del mes actual - YA NO SE NECESITA
-  // Se reemplaza por el componente CalendarioDinamico
 
   const handleAgendarCita = () => {
     setShowAgendarCitas(true);
@@ -45,18 +40,13 @@ const PanelPrincipal = () => {
   };
 
   const handleCitaAgendada = () => {
-    // Recargar las citas después de agendar una nueva
     cargarCitasHoy();
     console.log('Cita agendada exitosamente');
   };
 
   return (
     <div className="panel-principal">
-      <div className="panel-header">
-        <h1>Panel de Control</h1>
-        <p>Bienvenido {user?.nombre} - {user?.rol}</p>
-      </div>
-      
+      {/* Sección de Citas de Hoy */}
       <div className="panel-section">
         <div className="citas-header">
           <h3>Citas de Hoy</h3>
@@ -90,41 +80,27 @@ const PanelPrincipal = () => {
         </div>
       </div>
       
+      {/* Sección del Calendario y Acciones */}
       <div className="panel-section">
-        {/* Usar el nuevo componente CalendarioDinamico */}
         <CalendarioDinamico />
         
         <div className="panel-actions">
           <div className="action-icons">
             <Link to="/pacientes" className="action-icon">
               <span>👤</span>
-              <span>Registrar Paciente</span>
+              <span>Pacientes</span>
             </Link>
             <Link to="/historial" className="action-icon">
               <span>📋</span>
               <span>Historial Clínico</span>
             </Link>
-            {/* Botón Agendar Cita siempre visible */}
             <button onClick={handleAgendarCita} className="action-icon action-button">
               <span>📅</span>
               <span>Agendar Cita</span>
             </button>
-            <Link to="/pacientes" className="action-icon">
-              <span>👥</span>
-              <span>Pacientes</span>
-            </Link>
           </div>
         </div>
       </div>
-
-      {/* Botón flotante fijo para agendar cita */}
-      <button 
-        onClick={handleAgendarCita} 
-        className="btn-agendar-fijo"
-        title="Agendar Nueva Cita"
-      >
-        📅
-      </button>
 
       {/* Sidebar para agendar citas */}
       <AgendarCitasSidebar 

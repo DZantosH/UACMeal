@@ -135,71 +135,74 @@ const CalendarioDinamico = () => {
   };
 
   return (
-    <div className="calendario-container">
-      {/* Controles de navegación */}
-      <div className="calendario-header">
-        <div className="nav-controls">
-          <button onClick={() => navegarAnio(-1)} className="nav-btn nav-year">
-            ←← {currentDate.getFullYear() - 1}
-          </button>
-          <button onClick={() => navegarMes(-1)} className="nav-btn">
-            ← {monthNames[currentDate.getMonth() - 1] || monthNames[11]}
-          </button>
-        </div>
-        
-        <div className="current-month-year">
-          <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
-          <button onClick={irAHoy} className="btn-today">
-            Ir a Hoy
-          </button>
-        </div>
-        
-        <div className="nav-controls">
-          <button onClick={() => navegarMes(1)} className="nav-btn">
-            {monthNames[currentDate.getMonth() + 1] || monthNames[0]} →
-          </button>
-          <button onClick={() => navegarAnio(1)} className="nav-btn nav-year">
-            {currentDate.getFullYear() + 1} →→
-          </button>
-        </div>
-      </div>
-
-      {/* Leyenda de colores */}
-      <div className="calendario-leyenda">
-        <div className="leyenda-item">
-          <div className="color-muestra estado-vacio"></div>
-          <span>Sin citas</span>
-        </div>
-        <div className="leyenda-item">
-          <div className="color-muestra estado-libre"></div>
-          <span>1-2 citas</span>
-        </div>
-        <div className="leyenda-item">
-          <div className="color-muestra estado-medio"></div>
-          <span>3-4 citas</span>
-        </div>
-        <div className="leyenda-item">
-          <div className="color-muestra estado-ocupado"></div>
-          <span>5-6 citas</span>
-        </div>
-        <div className="leyenda-item">
-          <div className="color-muestra estado-completo"></div>
-          <span>7+ citas (Lleno)</span>
-        </div>
-      </div>
-
-      {/* Grid del calendario */}
-      <div className="calendar-grid-dynamic">
-        {loading ? (
-          <div className="calendar-loading">
-            <p>Cargando calendario...</p>
+    <>
+      {/* CALENDARIO - Todo el contenido del calendario */}
+      <div className="calendario-container">
+        {/* Controles de navegación */}
+        <div className="calendario-header">
+          <div className="nav-controls">
+            <button onClick={() => navegarAnio(-1)} className="nav-btn nav-year">
+              ←← {currentDate.getFullYear() - 1}
+            </button>
+            <button onClick={() => navegarMes(-1)} className="nav-btn">
+              ← {monthNames[currentDate.getMonth() - 1] || monthNames[11]}
+            </button>
           </div>
-        ) : (
-          generateCalendar()
-        )}
+          
+          <div className="current-month-year">
+            <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
+            <button onClick={irAHoy} className="btn-today">
+              Ir a Hoy
+            </button>
+          </div>
+          
+          <div className="nav-controls">
+            <button onClick={() => navegarMes(1)} className="nav-btn">
+              {monthNames[currentDate.getMonth() + 1] || monthNames[0]} →
+            </button>
+            <button onClick={() => navegarAnio(1)} className="nav-btn nav-year">
+              {currentDate.getFullYear() + 1} →→
+            </button>
+          </div>
+        </div>
+
+        {/* Leyenda de colores */}
+        <div className="calendario-leyenda">
+          <div className="leyenda-item">
+            <div className="color-muestra estado-vacio"></div>
+            <span>Sin citas</span>
+          </div>
+          <div className="leyenda-item">
+            <div className="color-muestra estado-libre"></div>
+            <span>1-2 citas</span>
+          </div>
+          <div className="leyenda-item">
+            <div className="color-muestra estado-medio"></div>
+            <span>3-4 citas</span>
+          </div>
+          <div className="leyenda-item">
+            <div className="color-muestra estado-ocupado"></div>
+            <span>5-6 citas</span>
+          </div>
+          <div className="leyenda-item">
+            <div className="color-muestra estado-completo"></div>
+            <span>7+ citas (Lleno)</span>
+          </div>
+        </div>
+
+        {/* Grid del calendario */}
+        <div className="calendar-grid-dynamic">
+          {loading ? (
+            <div className="calendar-loading">
+              <p>Cargando calendario...</p>
+            </div>
+          ) : (
+            generateCalendar()
+          )}
+        </div>
       </div>
 
-      {/* Sidebar/Popup para mostrar citas del día */}
+      {/* SIDEBAR - CitasDelDia FUERA del calendario */}
       {showCitasDelDia && (
         <CitasDelDia 
           fecha={selectedDate}
@@ -207,7 +210,7 @@ const CalendarioDinamico = () => {
           onClose={() => setShowCitasDelDia(false)}
         />
       )}
-    </div>
+    </>
   );
 };
 
