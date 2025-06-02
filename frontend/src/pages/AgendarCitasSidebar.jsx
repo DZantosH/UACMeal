@@ -1,5 +1,6 @@
 // AgendarCitasSidebar.jsx
 import React, { useState, useEffect, useCallback } from 'react';
+import { buildApiUrl } from '../config/config.js';
 
 const AgendarCitasSidebar = ({ isOpen, onClose, onAgendarCita }) => {
   const [formData, setFormData] = useState({
@@ -49,7 +50,7 @@ const AgendarCitasSidebar = ({ isOpen, onClose, onAgendarCita }) => {
   const cargarPacientes = useCallback(async () => {
     try {
       setLoadingData(true);
-      const response = await fetch('http://localhost:5000/api/pacientes');
+      const response = await fetch(buildApiUrl('/pacientes'));
       if (response.ok) {
         const data = await response.json();
         setPacientes(Array.isArray(data) ? data : []);
@@ -68,7 +69,7 @@ const AgendarCitasSidebar = ({ isOpen, onClose, onAgendarCita }) => {
   const cargarDoctores = useCallback(async () => {
     try {
       setLoadingData(true);
-      const response = await fetch('http://localhost:5000/api/usuarios/doctores');
+      const response = await fetch(buildApiUrl('/usuarios/doctores'));
       if (response.ok) {
         const data = await response.json();
         setDoctores(Array.isArray(data) ? data : []);
@@ -180,7 +181,7 @@ const AgendarCitasSidebar = ({ isOpen, onClose, onAgendarCita }) => {
         observaciones: formData.observaciones
       };
 
-      const response = await fetch('http://localhost:5000/api/citas', {
+      const response = await fetch(buildApiUrl('/citas'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

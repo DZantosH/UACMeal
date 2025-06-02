@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { buildApiUrl } from '../config/config.js';
 
 const Pacientes = () => {
   const [pacientes, setPacientes] = useState([]);
@@ -11,7 +12,7 @@ const Pacientes = () => {
   const cargarPacientes = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/pacientes');
+      const response = await fetch(buildApiUrl('/pacientes'));
       if (response.ok) {
         const data = await response.json();
         setPacientes(data);
@@ -63,13 +64,12 @@ const Pacientes = () => {
 
   const verHistorialClinico = useCallback((pacienteId) => {
     // Abrir el PDF del historial clínico
-    const url = `http://localhost:5000/api/pacientes/${pacienteId}/historial-clinico`;
-    window.open(url, '_blank');
+    const url = buildApiUrl(`/pacientes/${pacienteId}/historial-clinico`);
   }, []);
 
   const verRadiografias = useCallback((pacienteId) => {
     // Abrir el PDF de radiografías
-    const url = `http://localhost:5000/api/pacientes/${pacienteId}/radiografias`;
+   const url = buildApiUrl(`/pacientes/${pacienteId}/radiografias`);
     window.open(url, '_blank');
   }, []);
 

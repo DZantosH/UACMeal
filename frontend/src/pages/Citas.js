@@ -1,5 +1,7 @@
 // Citas.js - Componente para gestionar citas (Frontend)
 import React, { useState, useEffect } from 'react';
+import { buildApiUrl } from '../config/config.js';
+
 
 const Citas = () => {
   const [citas, setCitas] = useState([]);
@@ -12,7 +14,7 @@ const Citas = () => {
   const cargarCitas = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/citas');
+      const response = await fetch(buildApiUrl('/citas'));
       if (response.ok) {
         const data = await response.json();
         setCitas(data);

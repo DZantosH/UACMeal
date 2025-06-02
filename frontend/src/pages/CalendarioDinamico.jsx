@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import CitasDelDia from './CitasDelDia';
+import { buildApiUrl } from '../config/config.js';
+
 
 const CalendarioDinamico = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -21,7 +23,7 @@ const CalendarioDinamico = () => {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1; // +1 porque getMonth() devuelve 0-11
       
-      const response = await fetch(`http://localhost:5000/api/citas/mes/${year}/${month}`);
+      const response = await fetch(buildApiUrl(`/citas/mes/${year}/${month}`));
       if (response.ok) {
         const data = await response.json();
         

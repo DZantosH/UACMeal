@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AgendarCitasSidebar from './AgendarCitasSidebar';
 import CalendarioDinamico from './CalendarioDinamico';
+import { buildApiUrl } from '../config/config.js';
+
 
 const PanelPrincipal = () => {
   const [showAgendarCitas, setShowAgendarCitas] = useState(false);
@@ -15,7 +17,7 @@ const PanelPrincipal = () => {
   const cargarCitasHoy = async () => {
     try {
       setLoadingCitas(true);
-      const response = await fetch('http://localhost:5000/api/citas/hoy');
+      const response = await fetch(buildApiUrl('/citas/hoy'));
       if (response.ok) {
         const data = await response.json();
         setCitasHoy(data);

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { buildApiUrl } from '../config/config.js';
+
 
 const CitasDelDia = ({ fecha, isOpen, onClose }) => {
   const [citas, setCitas] = useState([]);
@@ -9,7 +11,7 @@ const CitasDelDia = ({ fecha, isOpen, onClose }) => {
       setLoading(true);
       const fechaFormateada = fecha.toISOString().split('T')[0];
       
-      const response = await fetch(`http://localhost:5000/api/citas/dia/${fechaFormateada}`);
+      const response = await fetch(buildApiUrl(`/citas/dia/${fechaFormateada}`));
       if (response.ok) {
         const data = await response.json();
         setCitas(data);
