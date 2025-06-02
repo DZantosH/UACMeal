@@ -1,95 +1,53 @@
-// backend/routes/usuarios.js
-const express = require('express');
-const { pool } = require('../config/database');
+const express = require("express");
 const router = express.Router();
+const pool = require("../config/database");
 
-// GET - Obtener todos los doctores
-router.get('/doctores', async (req, res) => {
+// Obtener todos los usuarios
+router.get("/", async (req, res) => {
   try {
-    const [rows] = await pool.execute(
-      `SELECT 
-        id, 
-        nombre, 
-        CONCAT(apellido_paterno, ' ', IFNULL(apellido_materno, '')) as apellido,
-        apellido_paterno,
-        apellido_materno,
-        email, 
-        telefono,
-        rol
-       FROM usuarios 
-       WHERE rol IN ('Administrador', 'Doctor') AND activo = 1
-       ORDER BY 
-         CASE 
-           WHEN rol = 'Doctor' THEN 1 
-           WHEN rol = 'Administrador' THEN 2 
-         END,
-         nombre, apellido_paterno`
-    );
+    const [rows] = await pool.query("SELECT * FROM usuarios");
     res.json(rows);
   } catch (error) {
-    console.error('Error al obtener doctores:', error);
-    res.status(500).json({ message: 'Error al obtener doctores' });
+    console.error("Error al obtener usuarios:", error);
+    res.status(500).json({ error: "Error al obtener usuarios" });
   }
 });
 
-// GET - Obtener todos los usuarios
-router.get('/', async (req, res) => {
+// Obtener solo los doctores
+router.get("/doctores", async (req, res) => {
   try {
-    const [rows] = await pool.execute(
-      `SELECT 
-        id, 
-        nombre, 
-        apellido_paterno,
-        apellido_materno,
-        email, 
-        rol, 
-        telefono,
-        activo, 
-        fecha_creacion
-       FROM usuarios 
-       ORDER BY nombre, apellido_paterno`
+    const [rows] = await pool.query(
+      "SELECT id, nombre, apellido_paterno, apellido_materno FROM usuarios WHERE rol = 'Doctor' AND activo = 1"
     );
     res.json(rows);
   } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({ message: 'Error al obtener usuarios' });
+    console.error("Error al obtener doctores:", error);
+    res.status(500).json({ error: "Error al obtener doctores" });
   }
 });
 
-// POST - Crear nuevo usuario
-router.post('/', async (req, res) => {
+// Crear nuevo usuario
+router.post("/", async (req, res) => {
   try {
-    const { nombre, apellido_paterno, apellido_materno, email, password, rol, telefono } = req.body;
-    
-    // Verificar si ya existe el email
-    const [existingUser] = await pool.execute(
-      'SELECT id FROM usuarios WHERE email = ?',
-      [email]
-    );
-    
-    if (existingUser.length > 0) {
-      return res.status(400).json({ message: 'Ya existe un usuario con ese email' });
-    }
-    
-    // Validar rol
-    const rolesValidos = ['Administrador', 'Doctor', 'Secretaria'];
-    if (!rolesValidos.includes(rol)) {
-      return res.status(400).json({ message: 'Rol no válido' });
-    }
-    
-    const [result] = await pool.execute(
-      `INSERT INTO usuarios (nombre, apellido_paterno, apellido_materno, email, password, rol, telefono, activo, fecha_creacion)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 1, NOW())`,
+    const {
+      nombre,
+      apellido_paterno,
+      apellido_materno,
+      email,
+      password,
+      rol,
+      telefono,
+    } = req.body;
+
+    const [result] = await pool.query(
+      "INSERT INTO usuarios (nombre, apellido_paterno, apellido_materno, email, password, rol, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)",
       [nombre, apellido_paterno, apellido_materno, email, password, rol, telefono]
     );
-    
-    res.status(201).json({
-      message: 'Usuario creado exitosamente',
-      usuarioId: result.insertId
-    });
+
+    res.status(201).json({ id: result.insertId });
   } catch (error) {
-    console.error('Error al crear usuario:', error);
-    res.status(500).json({ message: 'Error al crear usuario: ' + error.message });
+    console.error("Error al crear usuario:", error);
+    res.status(500).json({ error: "Error al crear usuario" });
   }
 });
 

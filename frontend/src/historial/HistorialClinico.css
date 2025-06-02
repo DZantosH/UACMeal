@@ -1,0 +1,5175 @@
+.historial-clinico-container * {
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   CONTAINER PRINCIPAL - FULLSCREEN
+   ========================================== */
+
+.historial-clinico-container {
+  height: calc(100vh - 55px) !important; /* Resta la altura de la barra azul */
+  width: 100vw !important;
+  background-color: #f8f9fa;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: fixed !important;
+  top: 55px !important; /* Comienza después de la barra azul */
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  overflow: hidden !important;
+  z-index: 100 !important;
+  box-sizing: border-box !important;
+}
+
+/* ==========================================
+   HEADER DEL HISTORIAL - OCULTO COMPLETAMENTE
+   ========================================== */
+
+.historial-header {
+  display: none !important; /* Ocultar completamente - la info está en el footer */
+}
+
+/* ==========================================
+   NAVEGACIÓN POR SECCIONES - MÁS COMPACTA
+   ========================================== */
+
+.secciones-nav {
+  background: white;
+  padding: 15px 30px; /* Reducido de 20px a 15px */
+  border-bottom: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px; /* Reducido de 6px a 4px */
+  background-color: #ecf0f1;
+  border-radius: 2px;
+  margin-bottom: 15px; /* Reducido de 20px a 15px */
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.secciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Reducido tamaño mínimo */
+  gap: 8px; /* Reducido de 10px a 8px */
+}
+
+.seccion-card {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px; /* Reducido de 12px 15px a 8px 12px */
+  border: 2px solid #ecf0f1;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.seccion-card:hover {
+  border-color: #3498db;
+  background-color: #f8f9fa;
+  transform: translateY(-1px); /* Reducido movimiento */
+}
+
+.seccion-card.active {
+  border-color: #3498db;
+  background-color: #3498db;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.seccion-card.completed {
+  border-color: #27ae60;
+  background-color: #d5f4e6;
+  color: #27ae60;
+}
+
+.seccion-numero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; /* Reducido de 24px a 20px */
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  font-size: 11px; /* Reducido de 12px a 11px */
+  font-weight: bold;
+  margin-right: 10px; /* Reducido de 12px a 10px */
+  flex-shrink: 0;
+}
+
+.seccion-card.active .seccion-numero {
+  background-color: white;
+  color: #3498db;
+}
+
+.seccion-card.completed .seccion-numero {
+  background-color: #27ae60;
+  color: white;
+}
+
+.seccion-titulo {
+  font-size: 12px; /* Reducido de 14px a 12px */
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* ==========================================
+   CONTENIDO DE SECCIONES - MÁS GRANDE Y VISIBLE (FORZADO)
+   ========================================== */
+
+.seccion-content {
+  background: white !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.seccion-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 15px 30px !important; /* Reducido de 20px a 15px */
+  border-bottom: 2px solid #ecf0f1 !important;
+  flex-shrink: 0 !important;
+}
+
+.seccion-header h3 {
+  color: #2c3e50 !important;
+  margin: 0 !important;
+  font-size: 24px !important; /* Aumentado de 22px a 24px */
+  font-weight: 600 !important;
+}
+
+.seccion-counter {
+  background-color: #ecf0f1 !important;
+  color: #7f8c8d !important;
+  padding: 4px 12px !important;
+  border-radius: 15px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.seccion-form {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  min-height: 0 !important; /* Permite que el contenido crezca */
+}
+
+/* ==========================================
+   FORMULARIOS - MÁS GRANDES Y VISIBLES (FORZADO)
+   ========================================== */
+
+.form-section h4 {
+  color: #2c3e50 !important;
+  margin-bottom: 40px !important; /* Aumentado de 30px a 40px */
+  font-size: 26px !important; /* Aumentado de 22px a 26px */
+  font-weight: 600 !important;
+  padding-bottom: 20px !important; /* Aumentado de 15px a 20px */
+  border-bottom: 3px solid #ecf0f1 !important; /* Aumentado grosor */
+}
+
+.form-row {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important; /* Aumentado tamaño mínimo */
+  gap: 40px !important; /* Aumentado de 30px a 40px */
+  margin-bottom: 40px !important; /* Aumentado de 30px a 40px */
+}
+
+.form-group {
+  margin-bottom: 35px !important; /* Aumentado de 25px a 35px */
+}
+
+.form-label {
+  display: block !important;
+  margin-bottom: 12px !important; /* Aumentado de 8px a 12px */
+  color: #2c3e50 !important;
+  font-weight: 700 !important; /* Aumentado de 600 a 700 */
+  font-size: 18px !important; /* Aumentado de 16px a 18px */
+}
+
+.form-input,
+.form-select {
+  width: 100% !important;
+  padding: 20px 24px !important; /* Aumentado de 15px 18px a 20px 24px */
+  border: 3px solid #ecf0f1 !important; /* Aumentado grosor del borde */
+  border-radius: 10px !important; /* Aumentado de 8px a 10px */
+  font-size: 18px !important; /* Aumentado de 16px a 18px */
+  transition: border-color 0.3s ease !important;
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+  line-height: 1.5 !important;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 150px; /* antes 120px */
+  padding: 12px;
+  font-size: 15px;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none !important;
+  border-color: #3498db !important;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15) !important; /* Aumentado shadow */
+}
+
+.form-textarea {
+  resize: vertical !important;
+  min-height: 150px !important; /* Aumentado de 120px a 150px */
+  line-height: 1.6 !important;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #adb5bd !important;
+  font-size: 16px !important;
+}
+
+/* ==========================================
+   FOOTER DE NAVEGACIÓN - MÁS COMPACTO
+   ========================================== */
+
+.navegacion-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 12px 30px; /* Reducido de 15px a 12px */
+  border-top: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.paciente-info-footer h2 {
+  color: #2c3e50;
+  margin: 0 0 4px 0; /* Reducido de 8px a 4px */
+  font-size: 18px; /* Reducido de 20px a 18px */
+  font-weight: 600;
+}
+
+.paciente-datos-footer p {
+  margin: 1px 0; /* Reducido de 2px a 1px */
+  color: #7f8c8d;
+  font-size: 11px; /* Reducido de 12px a 11px */
+}
+
+.navegacion-botones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ==========================================
+   BOTONES GENERALES
+   ========================================== */
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-volver {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-volver:hover:not(:disabled) {
+  background-color: #7f8c8d;
+  transform: translateY(-1px);
+}
+
+.btn-siguiente {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-siguiente:hover:not(:disabled) {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Estado de guardado temporal */
+.guardado-temporal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #28a745;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.guardado-temporal .icono {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+}
+
+.guardado-temporal.guardando {
+  color: #ffc107;
+}
+
+.guardado-temporal.guardando .icono {
+  background-color: #ffc107;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN FULLSCREEN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .historial-header,
+  .secciones-nav,
+  .navegacion-footer {
+    padding: 15px 20px;
+  }
+
+  .seccion-header {
+    padding: 15px 20px;
+  }
+
+  .paciente-info h1 {
+    font-size: 24px;
+  }
+
+  .secciones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seccion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historial-header,
+  .secciones-nav,
+  .navegacion-footer {
+    padding: 8px 12px;
+  }
+
+  .seccion-header {
+    padding: 12px;
+  }
+
+  .seccion-card {
+    padding: 10px 12px;
+  }
+
+  .seccion-titulo {
+    font-size: 13px;
+  }
+
+  .paciente-info h1 {
+    font-size: 22px;
+  }
+
+  .navegacion-footer {
+    padding: 12px;
+  }
+}
+
+/* ==========================================
+   HEADER DEL HISTORIAL - SIN BOTONES
+   ========================================== */
+
+.historial-header {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.paciente-info h1 {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.paciente-datos p {
+  margin: 4px 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* ==========================================
+   FOOTER DE NAVEGACIÓN CON INFORMACIÓN
+   ========================================== */
+
+.navegacion-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.paciente-info-footer h2 {
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.paciente-datos-footer p {
+  margin: 2px 0;
+  color: #7f8c8d;
+  font-size: 12px;
+}
+
+.navegacion-botones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-volver {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-volver:hover:not(:disabled) {
+  background-color: #7f8c8d;
+  transform: translateY(-1px);
+}
+
+.btn-siguiente {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-siguiente:hover:not(:disabled) {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* ==========================================
+   NAVEGACIÓN POR SECCIONES
+   ========================================== */
+
+.secciones-nav {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #ecf0f1;
+  border-radius: 3px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.secciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.seccion-card {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.seccion-card:hover {
+  border-color: #3498db;
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+.seccion-card.active {
+  border-color: #3498db;
+  background-color: #3498db;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.seccion-card.completed {
+  border-color: #27ae60;
+  background-color: #d5f4e6;
+  color: #27ae60;
+}
+
+.seccion-numero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.seccion-card.active .seccion-numero {
+  background-color: white;
+  color: #3498db;
+}
+
+.seccion-card.completed .seccion-numero {
+  background-color: #27ae60;
+  color: white;
+}
+
+.seccion-titulo {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ==========================================
+   CONTENIDO DE SECCIONES
+   ========================================== */
+
+.seccion-content {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
+}
+
+.seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.seccion-header h3 {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.seccion-counter {
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ==========================================
+   FORMULARIOS
+   ========================================== */
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #ecf0f1;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ==========================================
+   BOTONES GENERALES
+   ========================================== */
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Estado de guardado temporal */
+.guardado-temporal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #28a745;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.guardado-temporal .icono {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+}
+
+.guardado-temporal.guardando {
+  color: #ffc107;
+}
+
+.guardado-temporal.guardando .icono {
+  background-color: #ffc107;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+@media (max-width: 768px) {
+  .seccion-card {
+    min-width: 80vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .historial-clinico-container {
+    padding: 15px;
+  }
+
+  .historial-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .secciones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seccion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .seccion-content {
+    padding: 20px;
+  }
+
+  .secciones-nav {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historial-clinico-container {
+    padding: 8px;
+  }
+
+  .historial-header {
+    padding: 12px;
+  }
+
+  .secciones-nav {
+    padding: 12px;
+  }
+
+  .seccion-content {
+    padding: 15px;
+  }
+
+  .seccion-card {
+    padding: 10px 12px;
+  }
+
+  .seccion-titulo {
+    font-size: 13px;
+  }
+
+  .navegacion-footer {
+    padding: 12px;
+  }
+
+  .paciente-info h1 {
+    font-size: 24px;
+  }
+}
+
+/* ==========================================
+   NAVEGACIÓN POR SECCIONES - VISTA HORIZONTAL
+   ========================================== */
+
+.secciones-nav {
+  background: white;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  margin-bottom: 25px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff, #28a745);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  width: 9%; /* 1 de 11 secciones activa */
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Vista de tabla horizontal para secciones */
+.secciones-tabla {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 2px;
+  background: #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.seccion-tab {
+  background: white;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: #495057;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 60px;
+  justify-content: center;
+}
+
+.seccion-tab:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  transform: translateY(-1px);
+}
+
+.seccion-tab.active {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.seccion-tab.completed {
+  background: #d4edda;
+  color: #155724;
+  border-color: #28a745;
+}
+
+.seccion-numero-horizontal {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.seccion-tab.active .seccion-numero-horizontal {
+  background-color: white;
+  color: #007bff;
+}
+
+.seccion-tab.completed .seccion-numero-horizontal {
+  background-color: #28a745;
+  color: white;
+}
+
+.seccion-titulo-horizontal {
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center;
+  word-break: break-word;
+}
+
+/* Grid original para vista de secciones */
+.secciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.seccion-card {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.seccion-card:hover {
+  border-color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.seccion-card.active {
+  background-color: #ff7eb9; /* Rosita pastel bonito */
+  color: white;
+  border-color: #ff7eb9;
+  font-weight: bold;
+}
+
+
+.seccion-numero {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.seccion-card.active .seccion-numero {
+  background-color: white;
+  color: #007bff;
+}
+
+.seccion-titulo {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+/* ==========================================
+   CONTENIDO DE SECCIONES
+   ========================================== */
+
+.seccion-content {
+  background: white;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 2px solid #f8f9fa;
+  flex-shrink: 0;
+}
+
+.seccion-header h3 {
+  color: #495057;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.seccion-counter {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.seccion-form {
+  flex: 1;
+  margin-top: 0;
+  padding-top: 0;
+  overflow-y: auto;
+}
+
+/* ==========================================
+   FORMULARIOS DEL HISTORIAL CLÍNICO
+   ========================================== */
+
+.form-section h4 {
+  color: #495057;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 6px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-input::placeholder {
+  color: #adb5bd;
+}
+
+/* Estilos específicos para inputs de fecha */
+.form-input[type="date"] {
+  color: #495057;
+}
+
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+  color: #6c757d;
+  cursor: pointer;
+}
+
+/* Textareas específicas del historial */
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-textarea::placeholder {
+  color: #adb5bd;
+}
+
+/* Checkboxes específicos del historial */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.checkbox-group label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Estilos específicos para secciones del historial */
+.ficha-identificacion h4,
+.motivo-consulta h4,
+.antecedentes h4,
+.examen-fisico h4,
+.diagnostico h4,
+.plan-tratamiento h4 {
+  color: #495057;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Sección de dolor específica */
+.dolor-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.dolor-controls {
+  margin-top: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.dolor-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 10px 0;
+}
+
+.dolor-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e74c3c;
+  cursor: pointer;
+}
+
+.dolor-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e74c3c;
+  cursor: pointer;
+  border: none;
+}
+
+.dolor-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.dolor-value {
+  background: #e74c3c;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* ==========================================
+   BOTONES ESPECÍFICOS DEL HISTORIAL
+   ========================================== */
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Estados de carga */
+.btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   FOOTER DE NAVEGACIÓN
+   ========================================== */
+
+.navegacion-footer {
+  background: white;
+  padding: 20px 30px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.seccion-info {
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.navegacion-botones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Botones específicos por sección */
+.btn-anterior {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-anterior:hover:not(:disabled) {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+.btn-siguiente {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-siguiente:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+/* Botones que aparecen solo en Plan de Tratamiento */
+.btn-guardar-final {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-guardar-final:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-pdf {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-pdf:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.btn-volver {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-volver:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Estado de guardado temporal */
+.guardado-temporal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #28a745;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.guardado-temporal .icono {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+}
+
+.guardado-temporal.guardando {
+  color: #ffc107;
+}
+
+.guardado-temporal.guardando .icono {
+  background-color: #ffc107;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN PARA HISTORIAL
+   ========================================== */
+
+@media (max-width: 1200px) {
+  .secciones-tabla {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+  }
+  
+  .seccion-tab {
+    padding: 8px 4px;
+    min-height: 50px;
+  }
+  
+  .seccion-titulo-horizontal {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 768px) {
+  .secciones-nav {
+    padding: 15px 20px;
+  }
+
+  .seccion-header {
+    padding: 15px 20px;
+  }
+
+  .seccion-form {
+    padding: 20px;
+  }
+
+  .secciones-tabla {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+  }
+
+  .seccion-tab {
+    padding: 6px 2px;
+    min-height: 45px;
+  }
+
+  .seccion-titulo-horizontal {
+    font-size: 8px;
+  }
+
+  .seccion-numero-horizontal {
+    width: 16px;
+    height: 16px;
+    font-size: 8px;
+  }
+
+  .secciones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 15px 20px;
+  }
+
+  .navegacion-botones {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .guardado-temporal {
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .secciones-nav,
+  .navegacion-footer {
+    padding: 10px 15px;
+  }
+
+  .seccion-header {
+    padding: 10px 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .seccion-form {
+    padding: 15px;
+  }
+
+  .seccion-header h3 {
+    font-size: 20px;
+  }
+
+  .btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  .navegacion-botones {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    margin-bottom: 20px;
+  }
+
+  .guardado-temporal {
+    font-size: 12px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .secciones-tabla {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .seccion-tab {
+    padding: 4px 1px;
+    min-height: 40px;
+  }
+
+  .seccion-titulo-horizontal {
+    font-size: 7px;
+  }
+
+  .seccion-numero-horizontal {
+    width: 14px;
+    height: 14px;
+    font-size: 7px;
+  }
+}
+
+/* ==========================================
+   MEJORAS DE ACCESIBILIDAD
+   ========================================== */
+
+.btn:focus-visible,
+.seccion-card:focus-visible,
+.seccion-tab:focus-visible,
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Reducir animaciones para usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill,
+  .seccion-card,
+  .seccion-tab,
+  .btn {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================
+   UTILIDADES ESPECÍFICAS DEL HISTORIAL
+   ========================================== */
+
+.historial-text-center {
+  text-align: center;
+}
+
+.historial-mb-0 {
+  margin-bottom: 0;
+}
+
+.historial-mt-20 {
+  margin-top: 20px;
+}
+
+.historial-hidden {
+  display: none;
+}
+
+.historial-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Estados completados de secciones */
+.seccion-completada {
+  border-color: #28a745 !important;
+  background-color: #d4edda !important;
+}
+
+.seccion-completada .seccion-numero {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+/* Estados con errores */
+.seccion-error {
+  border-color: #dc3545 !important;
+  background-color: #f8d7da !important;
+}
+
+.form-error {
+  border-color: #dc3545 !important;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* ==========================================
+   CONTENIDO DE SECCIONES
+   ========================================== */
+
+.seccion-content {
+  background: white;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 2px solid #f8f9fa;
+  flex-shrink: 0;
+}
+
+.seccion-header h3 {
+  color: #495057;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.seccion-counter {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.seccion-form {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ==========================================
+   FORMULARIOS DEL HISTORIAL CLÍNICO
+   ========================================== */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 6px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-input::placeholder {
+  color: #adb5bd;
+}
+
+/* Estilos específicos para inputs de fecha */
+.form-input[type="date"] {
+  color: #495057;
+}
+
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+  color: #6c757d;
+  cursor: pointer;
+}
+
+/* Textareas específicas del historial */
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-textarea::placeholder {
+  color: #adb5bd;
+}
+
+/* Checkboxes específicos del historial */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.checkbox-group label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Estilos específicos para secciones del historial */
+.ficha-identificacion h4,
+.motivo-consulta h4,
+.antecedentes h4,
+.examen-fisico h4,
+.diagnostico h4,
+.plan-tratamiento h4 {
+  color: #495057;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Sección de dolor específica */
+.dolor-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.dolor-controls {
+  margin-top: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.dolor-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 10px 0;
+}
+
+.dolor-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e74c3c;
+  cursor: pointer;
+}
+
+.dolor-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e74c3c;
+  cursor: pointer;
+  border: none;
+}
+
+.dolor-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.dolor-value {
+  background: #e74c3c;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* ==========================================
+   BOTONES ESPECÍFICOS DEL HISTORIAL
+   ========================================== */
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Estados de carga */
+.btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   FOOTER DE NAVEGACIÓN
+   ========================================== */
+
+.navegacion-footer {
+  background: white;
+  padding: 20px 30px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.seccion-info {
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.navegacion-botones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Botones específicos por sección */
+.btn-anterior {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-anterior:hover:not(:disabled) {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+.btn-siguiente {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-siguiente:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+/* Botones que aparecen solo en Plan de Tratamiento */
+.btn-guardar-final {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-guardar-final:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-pdf {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-pdf:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.btn-volver {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-volver:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Estado de guardado temporal */
+.guardado-temporal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #28a745;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.guardado-temporal .icono {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+}
+
+.guardado-temporal.guardando {
+  color: #ffc107;
+}
+
+.guardado-temporal.guardando .icono {
+  background-color: #ffc107;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN PARA HISTORIAL
+   ========================================== */
+
+@media (max-width: 768px) {
+  .secciones-nav {
+    padding: 15px 20px;
+  }
+
+  .seccion-header {
+    padding: 15px 20px;
+  }
+
+  .seccion-form {
+    padding: 0px;
+  }
+
+  .secciones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 15px 20px;
+  }
+
+  .navegacion-botones {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .guardado-temporal {
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .secciones-nav,
+  .navegacion-footer {
+    padding: 10px 15px;
+  }
+
+  .seccion-header {
+    padding: 10px 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .seccion-header h3 {
+    font-size: 20px;
+  }
+
+  .btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  .navegacion-botones {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    margin-bottom: 20px;
+  }
+
+  .guardado-temporal {
+    font-size: 12px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .secciones-grid {
+    gap: 8px;
+  }
+
+  .seccion-card {
+    padding: 12px;
+  }
+}
+
+/* ==========================================
+   MEJORAS DE ACCESIBILIDAD
+   ========================================== */
+
+.btn:focus-visible,
+.seccion-card:focus-visible,
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Reducir animaciones para usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill,
+  .seccion-card,
+  .btn {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================
+   UTILIDADES ESPECÍFICAS DEL HISTORIAL
+   ========================================== */
+
+.historial-text-center {
+  text-align: center;
+}
+
+.historial-mb-0 {
+  margin-bottom: 0;
+}
+
+.historial-mt-20 {
+  margin-top: 20px;
+}
+
+.historial-hidden {
+  display: none;
+}
+
+.historial-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Estados completados de secciones */
+.seccion-completada {
+  border-color: #28a745 !important;
+  background-color: #d4edda !important;
+}
+
+.seccion-completada .seccion-numero {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+/* Estados con errores */
+.seccion-error {
+  border-color: #dc3545 !important;
+  background-color: #f8d7da !important;
+}
+
+.form-error {
+  border-color: #dc3545 !important;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Para evitar scroll vertical en Ficha Identificación */
+.seccion-form.sin-scroll {
+  overflow-y: hidden !important;
+}
+
+.secciones-carrusel {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none; 
+  scrollbar-width: none;    
+}
+
+.secciones-carrusel::-webkit-scrollbar {
+  height: 6px;
+}
+
+.secciones-carrusel::-webkit-scrollbar-thumb {
+  background-color: #3498db;
+  border-radius: 4px;
+}
+
+.seccion-card {
+  min-width: 240px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+}
+
+.seccion-card.active {
+  transform: scale(1.08);
+}
+
+.secciones-carrusel::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari y Opera */
+}
+
+/* ==========================================
+   HISTORIAL CLÍNICO - CSS PRINCIPAL LIMPIO
+   ========================================== */
+
+.form-section {
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.form-group {
+  flex: 1 1 calc(33.333% - 16px);
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  padding: 10px;
+  font-size: 14px;
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #adb5bd;
+  font-size: 14px;
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* Sección de navegación */
+.secciones-carrusel {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px;
+  gap: 10px;
+}
+
+.seccion-card {
+  flex: 0 0 auto;
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.seccion-card.active {
+  background-color: #ffc0cb;
+  border-color: #ff9eb7;
+  font-weight: bold;
+}
+
+.seccion-card.completed {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #17a2b8;
+  transition: width 0.3s ease;
+}
+
+/* Navegación inferior */
+.navegacion-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-top: 1px solid #ddd;
+  margin-top: 20px;
+}
+
+.navegacion-botones {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-volver {
+  background-color: #6c757d;
+}
+
+.btn-volver:hover {
+  background-color: #545b62;
+}
+
+.guardado-temporal {
+  font-size: 13px;
+  color: #666;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.guardado-temporal.guardando .icono {
+  animation: blink 1s infinite;
+  color: green;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Estilos específicos para motivo de consulta */
+.motivos-sugeridos {
+  margin-top: 10px;
+}
+
+.motivos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.motivo-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.motivo-btn:hover {
+  background-color: #e2e6ea;
+}
+
+.dolor-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dolor-slider {
+  width: 100%;
+}
+
+.dolor-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.dolor-value {
+  font-weight: bold;
+  color: #dc3545;
+  margin: 0 8px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-note {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #555;
+  background: #f8f9fa;
+  padding: 10px;
+  border-left: 4px solid #17a2b8;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex: 1 1 100%;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .motivos-grid {
+    flex-direction: column;
+  }
+}
+
+/* ==========================================
+   ESTILOS ESPECÍFICOS PARA MOTIVO DE CONSULTA
+   ========================================== */
+
+.motivo-consulta-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.seccion-header-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.header-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.form-section-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-section-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px 24px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.card-badge {
+  padding: 6px 12px;
+  background: #007bff;
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dolor-badge {
+  background: var(--slider-color, #007bff);
+}
+
+.optional-badge {
+  background: #6c757d;
+}
+
+.urgencia-badge {
+  background: #17a2b8;
+}
+
+.form-group-enhanced {
+  padding: 24px;
+  margin-bottom: 0;
+}
+
+.form-label-enhanced {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #495057;
+  line-height: 1.4;
+}
+
+.textarea-container {
+  position: relative;
+}
+
+.form-textarea-enhanced {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  resize: vertical;
+  background: #fafbfc;
+}
+
+.form-textarea-enhanced:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: white;
+}
+
+.form-textarea-enhanced.small {
+  min-height: 80px;
+}
+
+.textarea-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 12px;
+  color: #6c757d;
+  background: rgba(255,255,255,0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.form-select-enhanced {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-select-enhanced:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: white;
+}
+
+.motivos-sugeridos-container {
+  padding: 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.suggestions-title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.motivos-grid-enhanced {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.motivo-btn-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.motivo-btn-enhanced:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.motivo-btn-enhanced.selected {
+  border-color: #007bff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.motivo-icon {
+  font-size: 24px;
+  min-width: 24px;
+}
+
+.motivo-text {
+  flex: 1;
+}
+
+.dolor-assessment {
+  padding: 24px;
+}
+
+.dolor-slider-wrapper {
+  margin: 20px 0;
+}
+
+.dolor-slider-enhanced {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  outline: none;
+  -webkit-appearance: none;
+  margin: 20px 0;
+  cursor: pointer;
+}
+
+.dolor-slider-enhanced::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--slider-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+.dolor-slider-enhanced::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.dolor-slider-enhanced::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--slider-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.dolor-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.scale-label {
+  font-size: 12px;
+  color: #6c757d;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.dolor-display {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.dolor-value-display {
+  background: var(--slider-color, #007bff);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  min-width: 160px;
+}
+
+.dolor-number {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dolor-description {
+  display: block;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.urgencia-selection {
+  padding: 24px;
+}
+
+.urgencia-description {
+  margin: 0 0 24px 0;
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.urgencia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.urgencia-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.urgencia-option:hover {
+  border-color: var(--urgencia-color);
+  background: #fafbfc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.urgencia-option.selected {
+  border-color: var(--urgencia-color);
+  background: var(--urgencia-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.urgencia-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--urgencia-color);
+  min-width: 16px;
+}
+
+.urgencia-option.selected .urgencia-indicator {
+  background: white;
+}
+
+.urgencia-content {
+  flex: 1;
+}
+
+.urgencia-label {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.urgencia-desc {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1.3;
+}
+
+.additional-info {
+  padding: 24px;
+}
+
+.info-note-enhanced {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+  border-radius: 12px;
+  border-left: 4px solid #2196f3;
+  margin-top: 24px;
+}
+
+.info-icon {
+  font-size: 24px;
+  min-width: 24px;
+}
+
+.info-content h6 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.info-content p {
+  margin: 0;
+  color: #424242;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ==========================================
+   RESPONSIVE PARA MOTIVO DE CONSULTA
+   ========================================== */
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex: 1 1 100%;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .motivos-grid {
+    flex-direction: column;
+  }
+
+  /* Motivo de consulta responsive */
+  .motivos-grid-enhanced {
+    grid-template-columns: 1fr;
+  }
+
+  .urgencia-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seccion-header-custom {
+    padding: 20px;
+  }
+
+  .header-content h3 {
+    font-size: 24px;
+  }
+
+  .form-group-enhanced {
+    padding: 20px;
+  }
+
+  .motivos-sugeridos-container {
+    padding: 20px;
+  }
+
+  .dolor-assessment,
+  .urgencia-selection,
+  .additional-info {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .motivo-btn-enhanced {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .dolor-value-display {
+    padding: 12px 20px;
+    min-width: 140px;
+  }
+
+  .dolor-number {
+    font-size: 28px;
+  }
+
+  .urgencia-option {
+    padding: 16px;
+  }
+}
+
+/* ==========================================
+   ESTILOS ESPECÍFICOS PARA ANTECEDENTES HEREDO-FAMILIARES
+   ========================================== */
+
+.antecedentes-heredo-familiares {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.antecedentes-heredo-familiares .seccion-header-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.section-description {
+  margin: 0 0 20px 0;
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Tabla de antecedentes mejorada */
+.antecedentes-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 180px 1fr 120px 120px 80px;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+  align-items: center;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 120px 120px 80px;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+  align-items: start;
+}
+
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+/* Inputs mejorados */
+.col-parentesco input,
+.col-edad input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.col-parentesco input:focus,
+.col-edad input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Columna de padecimientos con sugerencias */
+.col-padecimientos {
+  position: relative;
+  width: 100%;
+}
+
+.col-padecimientos textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.col-padecimientos textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Padecimientos sugeridos mejorados */
+.padecimientos-sugeridos {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: white;
+  border: 2px solid #007bff;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+}
+
+.col-padecimientos:hover .padecimientos-sugeridos,
+.col-padecimientos textarea:focus + .padecimientos-sugeridos,
+.padecimientos-sugeridos:hover {
+  display: block;
+}
+
+.padecimiento-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: white;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.padecimiento-btn:hover {
+  background-color: #f8f9ff;
+  color: #007bff;
+}
+
+.padecimiento-btn:last-child {
+  border-bottom: none;
+}
+
+/* Select mejorado */
+.col-estado select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.col-estado select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Acciones */
+.col-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-eliminar {
+  background: #dc3545;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  color: white;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-eliminar:hover {
+  background-color: #c82333;
+  transform: scale(1.1);
+}
+
+/* Botón agregar familiar */
+.btn-agregar-familiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+  margin-top: 16px;
+}
+
+.btn-agregar-familiar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+/* Grid de enfermedades mejorado */
+.enfermedades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.checkbox-group:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+  transform: translateY(-1px);
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #007bff;
+  margin: 0;
+}
+
+.checkbox-group label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  color: #495057;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.checkbox-group input[type="checkbox"]:checked + label {
+  color: #007bff;
+  font-weight: 600;
+}
+
+/* ==========================================
+   RESPONSIVE PARA ANTECEDENTES HEREDO-FAMILIARES
+   ========================================== */
+
+@media (max-width: 1200px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 150px 1fr 100px 100px 60px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .antecedentes-table {
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    display: block;
+    padding: 16px;
+  }
+
+  .table-header > div,
+  .table-row > div {
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .table-header > div {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .table-row > div::before {
+    content: attr(data-label) ": ";
+    font-weight: bold;
+    color: #495057;
+    display: inline-block;
+    width: 100px;
+  }
+
+  .enfermedades-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox-group {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-header,
+  .table-row {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .col-parentesco input,
+  .col-edad input,
+  .col-padecimientos textarea,
+  .col-estado select {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .btn-agregar-familiar {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ==========================================
+   ESTILOS ESPECÍFICOS PARA MOTIVO DE CONSULTA
+   ========================================== */
+
+.motivo-consulta-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.seccion-header-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.header-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.form-section-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-section-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px 24px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.card-badge {
+  padding: 6px 12px;
+  background: #007bff;
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dolor-badge {
+  background: var(--slider-color, #007bff);
+}
+
+.optional-badge {
+  background: #6c757d;
+}
+
+.urgencia-badge {
+  background: #17a2b8;
+}
+
+.form-group-enhanced {
+  padding: 24px;
+  margin-bottom: 0;
+}
+
+.form-label-enhanced {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #495057;
+  line-height: 1.4;
+}
+
+.textarea-container {
+  position: relative;
+}
+
+.form-textarea-enhanced {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  resize: vertical;
+  background: #fafbfc;
+}
+
+.form-textarea-enhanced:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: white;
+}
+
+.form-textarea-enhanced.small {
+  min-height: 80px;
+}
+
+.textarea-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 12px;
+  color: #6c757d;
+  background: rgba(255,255,255,0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.form-select-enhanced {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-select-enhanced:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: white;
+}
+
+.motivos-sugeridos-container {
+  padding: 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.suggestions-title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.motivos-grid-enhanced {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.motivo-btn-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.motivo-btn-enhanced:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.motivo-btn-enhanced.selected {
+  border-color: #007bff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.motivo-icon {
+  font-size: 24px;
+  min-width: 24px;
+}
+
+.motivo-text {
+  flex: 1;
+}
+
+.dolor-assessment {
+  padding: 24px;
+}
+
+.dolor-slider-wrapper {
+  margin: 20px 0;
+}
+
+.dolor-slider-enhanced {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  outline: none;
+  -webkit-appearance: none;
+  margin: 20px 0;
+  cursor: pointer;
+}
+
+.dolor-slider-enhanced::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--slider-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+.dolor-slider-enhanced::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.dolor-slider-enhanced::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--slider-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.dolor-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.scale-label {
+  font-size: 12px;
+  color: #6c757d;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.dolor-display {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.dolor-value-display {
+  background: var(--slider-color, #007bff);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  min-width: 160px;
+}
+
+.dolor-number {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dolor-description {
+  display: block;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.urgencia-selection {
+  padding: 24px;
+}
+
+.urgencia-description {
+  margin: 0 0 24px 0;
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.urgencia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.urgencia-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.urgencia-option:hover {
+  border-color: var(--urgencia-color);
+  background: #fafbfc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.urgencia-option.selected {
+  border-color: var(--urgencia-color);
+  background: var(--urgencia-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.urgencia-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--urgencia-color);
+  min-width: 16px;
+}
+
+.urgencia-option.selected .urgencia-indicator {
+  background: white;
+}
+
+.urgencia-content {
+  flex: 1;
+}
+
+.urgencia-label {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.urgencia-desc {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1.3;
+}
+
+.additional-info {
+  padding: 24px;
+}
+
+.info-note-enhanced {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+  border-radius: 12px;
+  border-left: 4px solid #2196f3;
+  margin-top: 24px;
+}
+
+.info-icon {
+  font-size: 24px;
+  min-width: 24px;
+}
+
+.info-content h6 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.info-content p {
+  margin: 0;
+  color: #424242;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ==========================================
+   RESPONSIVE PARA MOTIVO DE CONSULTA
+   ========================================== */
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex: 1 1 100%;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .motivos-grid {
+    flex-direction: column;
+  }
+
+  /* Motivo de consulta responsive */
+  .motivos-grid-enhanced {
+    grid-template-columns: 1fr;
+  }
+
+  .urgencia-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seccion-header-custom {
+    padding: 20px;
+  }
+
+  .header-content h3 {
+    font-size: 24px;
+  }
+
+  .form-group-enhanced {
+    padding: 20px;
+  }
+
+  .motivos-sugeridos-container {
+    padding: 20px;
+  }
+
+  .dolor-assessment,
+  .urgencia-selection,
+  .additional-info {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .motivo-btn-enhanced {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .dolor-value-display {
+    padding: 12px 20px;
+    min-width: 140px;
+  }
+
+  .dolor-number {
+    font-size: 28px;
+  }
+
+  .urgencia-option {
+    padding: 16px;
+  }
+}
+/* ==========================================
+   ESTILOS ESPECÍFICOS PARA ANTECEDENTES PERSONALES NO PATOLÓGICOS
+   ========================================== */
+
+.antecedentes-personales-no-patologicos {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Grids para servicios públicos */
+.servicios-publicos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+  max-width: 800px;
+}
+
+.servicio-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+  min-height: 140px;
+  justify-content: space-between;
+}
+
+.servicio-item:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+  transform: translateY(-2px);
+}
+
+.servicio-item.tiene-servicio {
+  border-color: #28a745;
+  background: #d4edda;
+  color: #155724;
+}
+
+.servicio-item.no-tiene-servicio {
+  border-color: #dc3545;
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.servicio-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.servicio-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.servicio-toggle {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.toggle-btn.active-si {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.toggle-btn.active-no {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.toggle-btn:not(.active-si):not(.active-no) {
+  background: #f8f9fa;
+  color: #6c757d;
+  border-color: #e9ecef;
+}
+
+.toggle-btn:not(.active-si):not(.active-no):hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* Hábitos de higiene */
+.higiene-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.higiene-section {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.higiene-section h5 {
+  margin: 0 0 16px 0;
+  color: #495057;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.higiene-section textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.higiene-section textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Hábitos alimentarios */
+.alimentarios-section {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.comidas-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.comidas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.comida-card {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.comida-card h6 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.comida-card textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  resize: vertical;
+  font-size: 13px;
+}
+
+/* Riesgos de salud */
+.riesgos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.riesgo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.riesgo-item:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+}
+
+.riesgo-item.selected {
+  border-color: #dc3545;
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.riesgo-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #dc3545;
+}
+
+.riesgo-item label {
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Hábitos perniciosos */
+.habitos-perniciosos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.habito-card {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.habito-card.tiene-habito {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.habito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.habito-titulo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #495057;
+  margin: 0;
+}
+
+.habito-toggle {
+  display: flex;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.habito-toggle .toggle-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.habito-toggle .toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.habito-toggle .toggle-btn.active-si {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.habito-toggle .toggle-btn.active-no {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.habito-toggle .toggle-btn:not(.active-si):not(.active-no) {
+  background: #f8f9fa;
+  color: #6c757d;
+  border-color: #e9ecef;
+}
+
+.habito-toggle .toggle-btn:not(.active-si):not(.active-no):hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.habito-detalles {
+  display: none;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+.habito-card.tiene-habito .habito-detalles {
+  display: block;
+}
+
+.detalle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Antecedentes médicos */
+.antecedentes-medicos {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.medicos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.medico-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medico-field label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.medico-field input,
+.medico-field textarea {
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.medico-field input:focus,
+.medico-field textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Antecedentes gineco-obstétricos */
+.gineco-section {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.gineco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.gineco-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gineco-toggle-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.gineco-toggle-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.gineco-toggle-group input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #007bff;
+}
+
+/* ==========================================
+   RESPONSIVE PARA ANTECEDENTES PERSONALES NO PATOLÓGICOS
+   ========================================== */
+
+@media (max-width: 768px) {
+  .servicios-publicos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .higiene-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comidas-info {
+    grid-template-columns: 1fr;
+  }
+
+  .comidas-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .habitos-perniciosos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gineco-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detalle-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .servicios-publicos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comidas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .riesgos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   ESTILOS ESPECÍFICOS PARA ANTECEDENTES HEREDO-FAMILIARES
+   ========================================== */
+
+.antecedentes-heredo-familiares {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.antecedentes-heredo-familiares .seccion-header-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.section-description {
+  margin: 0 0 20px 0;
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Tabla de antecedentes mejorada */
+.antecedentes-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 180px 1fr 120px 120px 80px;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+  align-items: center;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 120px 120px 80px;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+  align-items: start;
+}
+
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+/* Inputs mejorados */
+.col-parentesco input,
+.col-edad input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.col-parentesco input:focus,
+.col-edad input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Columna de padecimientos con sugerencias */
+.col-padecimientos {
+  position: relative;
+  width: 100%;
+}
+
+.col-padecimientos textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.col-padecimientos textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Padecimientos sugeridos mejorados */
+.padecimientos-sugeridos {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: white;
+  border: 2px solid #007bff;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+}
+
+.col-padecimientos:hover .padecimientos-sugeridos,
+.col-padecimientos textarea:focus + .padecimientos-sugeridos,
+.padecimientos-sugeridos:hover {
+  display: block;
+}
+
+.padecimiento-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: white;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.padecimiento-btn:hover {
+  background-color: #f8f9ff;
+  color: #007bff;
+}
+
+.padecimiento-btn:last-child {
+  border-bottom: none;
+}
+
+/* Select mejorado */
+.col-estado select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.col-estado select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Acciones */
+.col-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-eliminar {
+  background: #dc3545;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  color: white;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-eliminar:hover {
+  background-color: #c82333;
+  transform: scale(1.1);
+}
+
+/* Botón agregar familiar */
+.btn-agregar-familiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+  margin-top: 16px;
+}
+
+.btn-agregar-familiar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+/* Grid de enfermedades mejorado */
+.enfermedades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.checkbox-group:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+  transform: translateY(-1px);
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #007bff;
+  margin: 0;
+}
+
+.checkbox-group label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  color: #495057;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.checkbox-group input[type="checkbox"]:checked + label {
+  color: #007bff;
+  font-weight: 600;
+}
+
+/* ==========================================
+   RESPONSIVE PARA ANTECEDENTES HEREDO-FAMILIARES
+   ========================================== */
+
+@media (max-width: 1200px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 150px 1fr 100px 100px 60px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .antecedentes-table {
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    display: block;
+    padding: 16px;
+  }
+
+  .table-header > div,
+  .table-row > div {
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .table-header > div {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .table-row > div::before {
+    content: attr(data-label) ": ";
+    font-weight: bold;
+    color: #495057;
+    display: inline-block;
+    width: 100px;
+  }
+
+  .enfermedades-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox-group {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-header,
+  .table-row {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .col-parentesco input,
+  .col-edad input,
+  .col-padecimientos textarea,
+  .col-estado select {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .btn-agregar-familiar {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ==========================================
+   ESTILOS ESPECÍFICOS PARA MOTIVO DE CONSULTA
+   ========================================== */
+
+.motivo-consulta-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.seccion-header-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.header-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.form-section-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-section-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px 24px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.card-badge {
+  padding: 6px 12px;
+  background: #007bff;
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dolor-badge {
+  background: var(--slider-color, #007bff);
+}
+
+.optional-badge {
+  background: #6c757d;
+}
+
+.urgencia-badge {
+  background: #17a2b8;
+}
+
+.form-group-enhanced {
+  padding: 24px;
+  margin-bottom: 0;
+}
+
+.form-label-enhanced {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #495057;
+  line-height: 1.4;
+}
+
+.textarea-container {
+  position: relative;
+}
+
+.form-textarea-enhanced {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  resize: vertical;
+  background: #fafbfc;
+}
+
+.form-textarea-enhanced:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: white;
+}
+
+.form-textarea-enhanced.small {
+  min-height: 80px;
+}
+
+.textarea-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 12px;
+  color: #6c757d;
+  background: rgba(255,255,255,0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.form-select-enhanced {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-select-enhanced:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: white;
+}
+
+.motivos-sugeridos-container {
+  padding: 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.suggestions-title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.motivos-grid-enhanced {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.motivo-btn-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.motivo-btn-enhanced:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.motivo-btn-enhanced.selected {
+  border-color: #007bff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.motivo-icon {
+  font-size: 24px;
+  min-width: 24px;
+}
+
+.motivo-text {
+  flex: 1;
+}
+
+.dolor-assessment {
+  padding: 24px;
+}
+
+.dolor-slider-wrapper {
+  margin: 20px 0;
+}
+
+.dolor-slider-enhanced {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  outline: none;
+  -webkit-appearance: none;
+  margin: 20px 0;
+  cursor: pointer;
+}
+
+.dolor-slider-enhanced::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--slider-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+.dolor-slider-enhanced::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.dolor-slider-enhanced::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--slider-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.dolor-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.scale-label {
+  font-size: 12px;
+  color: #6c757d;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.dolor-display {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.dolor-value-display {
+  background: var(--slider-color, #007bff);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  min-width: 160px;
+}
+
+.dolor-number {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dolor-description {
+  display: block;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.urgencia-selection {
+  padding: 24px;
+}
+
+.urgencia-description {
+  margin: 0 0 24px 0;
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.urgencia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.urgencia-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.urgencia-option:hover {
+  border-color: var(--urgencia-color);
+  background: #fafbfc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.urgencia-option.selected {
+  border-color: var(--urgencia-color);
+  background: var(--urgencia-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.urgencia-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--urgencia-color);
+  min-width: 16px;
+}
+
+.urgencia-option.selected .urgencia-indicator {
+  background: white;
+}
+
+.urgencia-content {
+  flex: 1;
+}
+
+.urgencia-label {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.urgencia-desc {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1.3;
+}
+
+.additional-info {
+  padding: 24px;
+}
+
+.info-note-enhanced {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+  border-radius: 12px;
+  border-left: 4px solid #2196f3;
+  margin-top: 24px;
+}
+
+.info-icon {
+  font-size: 24px;
+  min-width: 24px;
+}
+
+.info-content h6 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.info-content p {
+  margin: 0;
+  color: #424242;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ==========================================
+   RESPONSIVE PARA MOTIVO DE CONSULTA
+   ========================================== */
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex: 1 1 100%;
+  }
+
+  .navegacion-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .motivos-grid {
+    flex-direction: column;
+  }
+
+  /* Motivo de consulta responsive */
+  .motivos-grid-enhanced {
+    grid-template-columns: 1fr;
+  }
+
+  .urgencia-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seccion-header-custom {
+    padding: 20px;
+  }
+
+  .header-content h3 {
+    font-size: 24px;
+  }
+
+  .form-group-enhanced {
+    padding: 20px;
+  }
+
+  .motivos-sugeridos-container {
+    padding: 20px;
+  }
+
+  .dolor-assessment,
+  .urgencia-selection,
+  .additional-info {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .motivo-btn-enhanced {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .dolor-value-display {
+    padding: 12px 20px;
+    min-width: 140px;
+  }
+
+  .dolor-number {
+    font-size: 28px;
+  }
+
+  .urgencia-option {
+    padding: 16px;
+  }
+}

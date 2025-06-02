@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const Pacientes = () => {
   const [pacientes, setPacientes] = useState([]);
@@ -7,15 +7,8 @@ const Pacientes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    cargarPacientes();
-  }, []);
-
-  useEffect(() => {
-    filtrarPacientes();
-  }, [busqueda, pacientes]);
-
-  const cargarPacientes = async () => {
+  // ✅ Función estable para cargar pacientes
+  const cargarPacientes = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('http://localhost:5000/api/pacientes');
@@ -32,16 +25,17 @@ const Pacientes = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filtrarPacientes = () => {
+  // ✅ Función estable para filtrar pacientes
+  const filtrarPacientes = useCallback(() => {
     if (!busqueda.trim()) {
       setPacientesFiltrados(pacientes);
       return;
     }
 
     const terminoBusqueda = busqueda.toLowerCase().trim();
-    const pacientesFiltrados = pacientes.filter(paciente => {
+    const pacientesFiltradosResult = pacientes.filter(paciente => {
       return (
         paciente.nombre?.toLowerCase().includes(terminoBusqueda) ||
         paciente.apellido_paterno?.toLowerCase().includes(terminoBusqueda) ||
@@ -50,24 +44,34 @@ const Pacientes = () => {
       );
     });
     
-    setPacientesFiltrados(pacientesFiltrados);
-  };
+    setPacientesFiltrados(pacientesFiltradosResult);
+  }, [busqueda, pacientes]);
 
-  const handleBusquedaChange = (e) => {
+  // ✅ useEffect para cargar datos iniciales
+  useEffect(() => {
+    cargarPacientes();
+  }, [cargarPacientes]);
+
+  // ✅ useEffect para filtrado con dependencias correctas
+  useEffect(() => {
+    filtrarPacientes();
+  }, [filtrarPacientes]);
+
+  const handleBusquedaChange = useCallback((e) => {
     setBusqueda(e.target.value);
-  };
+  }, []);
 
-  const verHistorialClinico = (pacienteId) => {
+  const verHistorialClinico = useCallback((pacienteId) => {
     // Abrir el PDF del historial clínico
     const url = `http://localhost:5000/api/pacientes/${pacienteId}/historial-clinico`;
     window.open(url, '_blank');
-  };
+  }, []);
 
-  const verRadiografias = (pacienteId) => {
+  const verRadiografias = useCallback((pacienteId) => {
     // Abrir el PDF de radiografías
     const url = `http://localhost:5000/api/pacientes/${pacienteId}/radiografias`;
     window.open(url, '_blank');
-  };
+  }, []);
 
   if (loading) {
     return (

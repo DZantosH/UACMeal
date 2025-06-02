@@ -1,6 +1,6 @@
 // backend/routes/citas.js
 const express = require('express');
-const { pool } = require('../config/database'); // ← Ruta correcta
+const { pool } = require('../config/database');
 const router = express.Router();
 
 // POST - Agendar nueva cita
@@ -24,6 +24,20 @@ router.post('/', async (req, res) => {
       console.log('ERROR: Faltan campos requeridos');
       return res.status(400).json({ message: 'Faltan campos requeridos' });
     }
+
+    // Validaciones de fecha y hora
+const fechaHoy = new Date().toISOString().split('T')[0];
+const horaValida = citaData.horario_consulta >= '11:00' && citaData.horario_consulta <= '20:00';
+const fechaValida = citaData.fecha_consulta >= fechaHoy;
+
+if (!fechaValida) {
+  return res.status(400).json({ message: "La fecha de la cita no puede ser anterior a hoy." });
+}
+
+if (!horaValida) {
+  return res.status(400).json({ message: "El horario debe ser entre 11:00 y 20:00." });
+}
+
     
     // Mapear tipo_consulta a los valores de tu enum
     const tiposCitaValidos = {

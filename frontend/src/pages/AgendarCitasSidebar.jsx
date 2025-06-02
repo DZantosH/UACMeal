@@ -32,12 +32,19 @@ const AgendarCitasSidebar = ({ isOpen, onClose, onAgendarCita }) => {
     'Revisión'
   ];
 
-  // Horarios disponibles
   const horariosDisponibles = [
-    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:30', '12:00', '12:30', '14:00', '14:30',
-    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
-  ];
+  '11:00', '11:30',
+  '12:00', '12:30',
+  '13:00', '13:30',
+  '14:00', '14:30',
+  '15:00', '15:30',
+  '16:00', '16:30',
+  '17:00', '17:30',
+  '18:00', '18:30',
+  '19:00', '19:30',
+  '20:00'
+];
+
 
   const cargarPacientes = useCallback(async () => {
     try {
@@ -328,11 +335,10 @@ const AgendarCitasSidebar = ({ isOpen, onClose, onAgendarCita }) => {
                 {loadingData ? 'Cargando doctores...' : 'Seleccione doctor/a'}
               </option>
               {Array.isArray(doctores) && doctores.map(doctor => (
-                <option key={doctor.id} value={doctor.id}>
-                  {doctor.rol === 'Doctor' ? 'Dr/Dra.' : 'Adm.'} {doctor.nombre} {doctor.apellido_paterno}
-                  {doctor.apellido_materno && ` ${doctor.apellido_materno}`}
-                </option>
-              ))}
+              <option key={doctor.id} value={doctor.id}>
+                Dr(a). {doctor.nombre} {doctor.apellido_paterno} {doctor.apellido_materno || ''}
+              </option>
+            ))}
             </select>
             {!Array.isArray(doctores) && !loadingData && (
               <small style={{color: 'red'}}>Error al cargar doctores</small>

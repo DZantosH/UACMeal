@@ -5,11 +5,10 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import PanelPrincipal from './pages/PanelPrincipal';
 import Pacientes from './pages/Pacientes';
-import HistorialClinico from './pages/HistorialClinico';
 import Citas from './pages/Citas';
-import './App.css';
+import HistorialClinico from './historial/HistorialClinico';
+import './App.css'; // ← Solo App.css aquí
 
-// Componente para rutas protegidas
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
@@ -25,20 +24,17 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
-// Componente principal de la app
 const AppContent = () => {
   const { user } = useAuth();
   
   return (
     <Router>
       <Routes>
-        {/* Ruta de login */}
         <Route 
           path="/login" 
           element={user ? <Navigate to="/" /> : <Login />} 
         />
         
-        {/* Rutas protegidas con layout */}
         <Route 
           path="/" 
           element={
@@ -47,22 +43,25 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         >
-          {/* Rutas anidadas que se renderizan en <Outlet /> */}
           <Route index element={<PanelPrincipal />} />
           <Route path="panel" element={<PanelPrincipal />} />
           <Route path="pacientes" element={<Pacientes />} />
-          <Route path="historial" element={<HistorialClinico />} />
+          
+          {/* ✅ RUTA: Historial sin parámetro */}
+          <Route path="historial-clinico" element={<HistorialClinico />} />
+          
+          {/* ✅ RUTA: Historial con parámetro */}
+          <Route path="historial-clinico/:pacienteId" element={<HistorialClinico />} />
+          
           <Route path="citas" element={<Citas />} />
         </Route>
         
-        {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
 };
 
-// App principal con provider
 function App() {
   return (
     <AuthProvider>

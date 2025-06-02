@@ -90,10 +90,13 @@ const PanelPrincipal = () => {
               <span>👤</span>
               <span>Pacientes</span>
             </Link>
-            <Link to="/historial" className="action-icon">
+            
+            {/* ✅ CORREGIDO: Link directo a historial-clinico */}
+            <Link to="/historial-clinico" className="action-icon">
               <span>📋</span>
               <span>Historial Clínico</span>
             </Link>
+            
             <button onClick={handleAgendarCita} className="action-icon action-button">
               <span>📅</span>
               <span>Agendar Cita</span>
