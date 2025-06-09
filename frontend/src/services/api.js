@@ -3,7 +3,7 @@ import { API_BASE_URL, ENVIRONMENT } from '../config/config.js';
 
 // Configuración base de Axios
 const api = axios.create({
-  baseURL: API_BASE_URL,  // Ahora usa la detección automática
+  baseURL: API_BASE_URL, 
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -36,26 +36,22 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para responses - manejar errores de autenticación
-api.interceptors.response.use(
-  (response) => {
-    if (ENVIRONMENT === 'development') {
-      console.log('✅ API Response:', response.status, response.config.url);
+// Interceptor para requests - agregar token automáticamente
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return response;
+
+    // Log en desarrollo
+    if (ENVIRONMENT === 'development') {
+      console.log('🚀 API Request:', config.method?.toUpperCase(), config.url);
+    }
+
+    return config;
   },
-  (error) => {
-    if (ENVIRONMENT === 'development') {
-      console.error('❌ API Error:', error.response?.status, error.config?.url);
-    }
-    
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      delete api.defaults.headers.common['Authorization'];
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Interceptor para requests - agregar token automáticamente
