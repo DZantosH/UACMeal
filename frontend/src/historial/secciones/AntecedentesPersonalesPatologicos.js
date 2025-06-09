@@ -36,8 +36,45 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
     }
   });
 
-  // Usar datos externos si están disponibles
+  // Usar datos externos si están disponibles, con validaciones
   const data = externalData || localData;
+
+  // Asegurar que padecimientos siempre sea un array
+  const padecimientos = Array.isArray(data.padecimientos) ? data.padecimientos : [
+    { padecimiento: '', edad: '', control_medico: '', complicaciones: '' },
+    { padecimiento: '', edad: '', control_medico: '', complicaciones: '' },
+    { padecimiento: '', edad: '', control_medico: '', complicaciones: '' }
+  ];
+
+  // Asegurar que las secciones anidadas existan
+  const anestesia = data.anestesia || {
+    ha_recibido: null,
+    problema_anestesia: null,
+    descripcion_problema: ''
+  };
+
+  const antecedentes_sistemicos = data.antecedentes_sistemicos || {
+    nutricionales: '',
+    infecciosos: '',
+    hemorragicos: '',
+    alergicos: '',
+    padecimientos_nombres: ''
+  };
+
+  const somatometria = data.somatometria || {
+    peso: '',
+    talla: '',
+    imc: ''
+  };
+
+  const signos_vitales = data.signos_vitales || {
+    temperatura: '',
+    tension_arterial_sistolica: '',
+    tension_arterial_diastolica: '',
+    frecuencia_respiratoria: '',
+    frecuencia_cardiaca: '',
+    pulso: ''
+  };
 
   // Función de cambio adaptada
   const handleChange = useCallback((field, value) => {
@@ -54,48 +91,53 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
 
   // Función para manejar cambios anidados
   const handleNestedChange = useCallback((section, field, value) => {
+    const currentSection = section === 'anestesia' ? anestesia :
+                          section === 'antecedentes_sistemicos' ? antecedentes_sistemicos :
+                          section === 'somatometria' ? somatometria :
+                          section === 'signos_vitales' ? signos_vitales : {};
+
     const newData = {
-      ...data[section],
+      ...currentSection,
       [field]: value
     };
     handleChange(section, newData);
-  }, [data, handleChange]);
+  }, [anestesia, antecedentes_sistemicos, somatometria, signos_vitales, handleChange]);
 
   // Función para manejar cambios en padecimientos
   const handlePadecimientoChange = useCallback((index, field, value) => {
-    const newPadecimientos = [...data.padecimientos];
+    const newPadecimientos = [...padecimientos];
     newPadecimientos[index] = {
       ...newPadecimientos[index],
       [field]: value
     };
     handleChange('padecimientos', newPadecimientos);
-  }, [data.padecimientos, handleChange]);
+  }, [padecimientos, handleChange]);
 
   // Función para agregar nuevo padecimiento
   const agregarPadecimiento = useCallback(() => {
     const newPadecimientos = [
-      ...data.padecimientos,
+      ...padecimientos,
       { padecimiento: '', edad: '', control_medico: '', complicaciones: '' }
     ];
     handleChange('padecimientos', newPadecimientos);
-  }, [data.padecimientos, handleChange]);
+  }, [padecimientos, handleChange]);
 
   // Calcular IMC automáticamente
   const calcularIMC = useCallback(() => {
-    const peso = parseFloat(data.somatometria?.peso);
-    const talla = parseFloat(data.somatometria?.talla);
+    const peso = parseFloat(somatometria.peso);
+    const talla = parseFloat(somatometria.talla);
     
     if (peso && talla && talla > 0) {
       const tallaMetros = talla / 100; // Convertir cm a metros
       const imc = (peso / (tallaMetros * tallaMetros)).toFixed(2);
       handleNestedChange('somatometria', 'imc', imc);
     }
-  }, [data.somatometria, handleNestedChange]);
+  }, [somatometria, handleNestedChange]);
 
   // Efecto para calcular IMC cuando cambian peso o talla
   React.useEffect(() => {
     calcularIMC();
-  }, [data.somatometria?.peso, data.somatometria?.talla, calcularIMC]);
+  }, [somatometria.peso, somatometria.talla, calcularIMC]);
 
   return (
     <div className="antecedentes-personales-patologicos">
@@ -123,12 +165,12 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
               <div className="padecimientos-header-cell">Complicaciones o secuelas</div>
             </div>
 
-            {data.padecimientos?.map((padecimiento, index) => (
+            {padecimientos.map((padecimiento, index) => (
               <div key={index} className="padecimientos-table-row">
                 <div className="padecimientos-cell" data-label="Padecimiento">
                   <input
                     type="text"
-                    value={padecimiento.padecimiento}
+                    value={padecimiento.padecimiento || ''}
                     onChange={(e) => handlePadecimientoChange(index, 'padecimiento', e.target.value)}
                     placeholder="Nombre del padecimiento"
                   />
@@ -136,7 +178,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                 <div className="padecimientos-cell" data-label="Edad">
                   <input
                     type="number"
-                    value={padecimiento.edad}
+                    value={padecimiento.edad || ''}
                     onChange={(e) => handlePadecimientoChange(index, 'edad', e.target.value)}
                     placeholder="Edad"
                     min="0"
@@ -146,14 +188,14 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                 <div className="padecimientos-cell" data-label="Control médico">
                   <input
                     type="text"
-                    value={padecimiento.control_medico}
+                    value={padecimiento.control_medico || ''}
                     onChange={(e) => handlePadecimientoChange(index, 'control_medico', e.target.value)}
                     placeholder="Sí/No, médico tratante"
                   />
                 </div>
                 <div className="padecimientos-cell" data-label="Complicaciones">
                   <textarea
-                    value={padecimiento.complicaciones}
+                    value={padecimiento.complicaciones || ''}
                     onChange={(e) => handlePadecimientoChange(index, 'complicaciones', e.target.value)}
                     placeholder="Describe complicaciones o secuelas"
                     rows="2"
@@ -188,14 +230,14 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                 <div className="anestesia-toggle">
                   <button
                     type="button"
-                    className={`toggle-btn ${data.anestesia?.ha_recibido === true ? 'active-si' : ''}`}
+                    className={`toggle-btn ${anestesia.ha_recibido === true ? 'active-si' : ''}`}
                     onClick={() => handleNestedChange('anestesia', 'ha_recibido', true)}
                   >
                     Sí
                   </button>
                   <button
                     type="button"
-                    className={`toggle-btn ${data.anestesia?.ha_recibido === false ? 'active-no' : ''}`}
+                    className={`toggle-btn ${anestesia.ha_recibido === false ? 'active-no' : ''}`}
                     onClick={() => handleNestedChange('anestesia', 'ha_recibido', false)}
                   >
                     No
@@ -208,14 +250,14 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                 <div className="anestesia-toggle">
                   <button
                     type="button"
-                    className={`toggle-btn ${data.anestesia?.problema_anestesia === true ? 'active-si' : ''}`}
+                    className={`toggle-btn ${anestesia.problema_anestesia === true ? 'active-si' : ''}`}
                     onClick={() => handleNestedChange('anestesia', 'problema_anestesia', true)}
                   >
                     Sí
                   </button>
                   <button
                     type="button"
-                    className={`toggle-btn ${data.anestesia?.problema_anestesia === false ? 'active-no' : ''}`}
+                    className={`toggle-btn ${anestesia.problema_anestesia === false ? 'active-no' : ''}`}
                     onClick={() => handleNestedChange('anestesia', 'problema_anestesia', false)}
                   >
                     No
@@ -224,11 +266,11 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
               </div>
             </div>
 
-            {data.anestesia?.problema_anestesia === true && (
+            {anestesia.problema_anestesia === true && (
               <div className="anestesia-problema-field">
                 <label className="form-label-enhanced">Describe el problema con la anestesia:</label>
                 <textarea
-                  value={data.anestesia?.descripcion_problema || ''}
+                  value={anestesia.descripcion_problema || ''}
                   onChange={(e) => handleNestedChange('anestesia', 'descripcion_problema', e.target.value)}
                   placeholder="Detalla qué tipo de problema tuvo con la anestesia dental..."
                   rows="3"
@@ -254,7 +296,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                   <h6>🍎 Nutricionales, digestivos, hepáticos, renales, endócrinos</h6>
                   <p>Cardíacos, vasculares, respiratorios, neoplásicos, neurológicos, piel y faneras, articulares y de la conducta u otros.</p>
                   <textarea
-                    value={data.antecedentes_sistemicos?.nutricionales || ''}
+                    value={antecedentes_sistemicos.nutricionales || ''}
                     onChange={(e) => handleNestedChange('antecedentes_sistemicos', 'nutricionales', e.target.value)}
                     placeholder="Describe antecedentes nutricionales, digestivos, hepáticos, renales, endócrinos..."
                   />
@@ -264,7 +306,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                   <h6>🦠 Antecedentes infecciosos</h6>
                   <p>Fiebres eruptivas, fiebre reumática, tuberculosis, sífilis, VIH, sida, papiloma, enfermedades micóticas y virales, abscesos e infecciones, parasitosis intestinales u otras.</p>
                   <textarea
-                    value={data.antecedentes_sistemicos?.infecciosos || ''}
+                    value={antecedentes_sistemicos.infecciosos || ''}
                     onChange={(e) => handleNestedChange('antecedentes_sistemicos', 'infecciosos', e.target.value)}
                     placeholder="Describe antecedentes infecciosos..."
                   />
@@ -274,7 +316,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                   <h6>🩸 Antecedentes hemorrágicos</h6>
                   <p>Hemorragias postquirúrgicas prolongadas, hemofilia, hemorragias nasales, bucales o rectales, púrpura, otras discrasias sanguíneas.</p>
                   <textarea
-                    value={data.antecedentes_sistemicos?.hemorragicos || ''}
+                    value={antecedentes_sistemicos.hemorragicos || ''}
                     onChange={(e) => handleNestedChange('antecedentes_sistemicos', 'hemorragicos', e.target.value)}
                     placeholder="Describe antecedentes hemorrágicos..."
                   />
@@ -284,7 +326,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                   <h6>🤧 Antecedentes alérgicos</h6>
                   <p>Alimentos, medicamentos, animales, objetos, ambiente, otros.</p>
                   <textarea
-                    value={data.antecedentes_sistemicos?.alergicos || ''}
+                    value={antecedentes_sistemicos.alergicos || ''}
                     onChange={(e) => handleNestedChange('antecedentes_sistemicos', 'alergicos', e.target.value)}
                     placeholder="Describe alergias conocidas..."
                   />
@@ -294,7 +336,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
               <div className="padecimientos-lista">
                 <h6>📝 Nombre de los Padecimientos</h6>
                 <textarea
-                  value={data.antecedentes_sistemicos?.padecimientos_nombres || ''}
+                  value={antecedentes_sistemicos.padecimientos_nombres || ''}
                   onChange={(e) => handleNestedChange('antecedentes_sistemicos', 'padecimientos_nombres', e.target.value)}
                   placeholder="Lista los nombres específicos de los padecimientos mencionados..."
                 />
@@ -332,7 +374,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                 <input
                   type="number"
                   step="0.1"
-                  value={data.somatometria?.peso || ''}
+                  value={somatometria.peso || ''}
                   onChange={(e) => handleNestedChange('somatometria', 'peso', e.target.value)}
                   placeholder="70.5"
                   min="1"
@@ -344,7 +386,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                 <input
                   type="number"
                   step="0.1"
-                  value={data.somatometria?.talla || ''}
+                  value={somatometria.talla || ''}
                   onChange={(e) => handleNestedChange('somatometria', 'talla', e.target.value)}
                   placeholder="170"
                   min="50"
@@ -355,7 +397,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                 <label>IMC:</label>
                 <input
                   type="text"
-                  value={data.somatometria?.imc || ''}
+                  value={somatometria.imc || ''}
                   readOnly
                   placeholder="Se calcula automáticamente"
                   style={{backgroundColor: '#f8f9fa', cursor: 'not-allowed'}}
@@ -374,7 +416,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                     <input
                       type="number"
                       step="0.1"
-                      value={data.signos_vitales?.temperatura || ''}
+                      value={signos_vitales.temperatura || ''}
                       onChange={(e) => handleNestedChange('signos_vitales', 'temperatura', e.target.value)}
                       placeholder="36.5"
                       min="30"
@@ -387,7 +429,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                     <label>Frecuencia respiratoria (por minuto):</label>
                     <input
                       type="number"
-                      value={data.signos_vitales?.frecuencia_respiratoria || ''}
+                      value={signos_vitales.frecuencia_respiratoria || ''}
                       onChange={(e) => handleNestedChange('signos_vitales', 'frecuencia_respiratoria', e.target.value)}
                       placeholder="20"
                       min="5"
@@ -404,7 +446,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                     <label>Tensión arterial sistólica (mmHg):</label>
                     <input
                       type="number"
-                      value={data.signos_vitales?.tension_arterial_sistolica || ''}
+                      value={signos_vitales.tension_arterial_sistolica || ''}
                       onChange={(e) => handleNestedChange('signos_vitales', 'tension_arterial_sistolica', e.target.value)}
                       placeholder="120"
                       min="60"
@@ -415,7 +457,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                     <label>Tensión arterial diastólica (mmHg):</label>
                     <input
                       type="number"
-                      value={data.signos_vitales?.tension_arterial_diastolica || ''}
+                      value={signos_vitales.tension_arterial_diastolica || ''}
                       onChange={(e) => handleNestedChange('signos_vitales', 'tension_arterial_diastolica', e.target.value)}
                       placeholder="80"
                       min="40"
@@ -428,7 +470,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                     <label>Frecuencia cardíaca (por minuto):</label>
                     <input
                       type="number"
-                      value={data.signos_vitales?.frecuencia_cardiaca || ''}
+                      value={signos_vitales.frecuencia_cardiaca || ''}
                       onChange={(e) => handleNestedChange('signos_vitales', 'frecuencia_cardiaca', e.target.value)}
                       placeholder="72"
                       min="30"
@@ -439,7 +481,7 @@ const AntecedentesPersonalesPatologicos = ({ datos: externalData, onChange: exte
                     <label>Pulso (por minuto):</label>
                     <input
                       type="number"
-                      value={data.signos_vitales?.pulso || ''}
+                      value={signos_vitales.pulso || ''}
                       onChange={(e) => handleNestedChange('signos_vitales', 'pulso', e.target.value)}
                       placeholder="72"
                       min="30"

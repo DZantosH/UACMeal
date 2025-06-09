@@ -10,10 +10,7 @@ import AntecedentesPersonalesNoPatologicos from './secciones/AntecedentesPersona
 import AntecedentesPersonalesPatologicos from './secciones/AntecedentesPersonalesPatologicos';
 import ExamenBucal from './secciones/ExamenBucal';
 import ExamenIntrabucal from './secciones/ExamenIntrabucal';
-import Oclusion from './secciones/Oclusion';
 import AuxiliaresDiagnostico from './secciones/AuxiliaresDiagnostico';
-import DiagnosticoPronostico from './secciones/DiagnosticoPronostico';
-import PlanTratamiento from './secciones/PlanTratamiento';
 
 const HistorialClinico = () => {
   const { pacienteId } = useParams();
@@ -21,6 +18,7 @@ const HistorialClinico = () => {
   const [datosFormulario, setDatosFormulario] = useState({});
   const [errores, setErrores] = useState({});
   const [guardando, setGuardando] = useState(false);
+  const [generandoPDF, setGenerandoPDF] = useState(false);
   const carruselRef = useRef(null);
 
   useEffect(() => {
@@ -55,6 +53,7 @@ const HistorialClinico = () => {
     }
   }, [pacienteId]);
 
+  // Secciones actualizadas - eliminadas las secciones 9 y 10
   const secciones = [
     { id: 1, titulo: 'Ficha Identificación', completada: false },
     { id: 2, titulo: 'Motivo Consulta', completada: false },
@@ -63,10 +62,8 @@ const HistorialClinico = () => {
     { id: 5, titulo: 'Ant. Pers. Patológicos', completada: false },
     { id: 6, titulo: 'Examen Extrabucal', completada: false },
     { id: 7, titulo: 'Examen Intrabucal', completada: false },
-    { id: 8, titulo: 'Oclusión', completada: false },
-    { id: 9, titulo: 'Aux. Diagnóstico', completada: false },
-    { id: 10, titulo: 'Diagnóstico', completada: false },
-    { id: 11, titulo: 'Plan Tratamiento', completada: false }
+    { id: 8, titulo: 'Aux. Diagnóstico', completada: false }
+    // Eliminadas las secciones 9 (Diagnóstico) y 10 (Plan Tratamiento)
   ];
 
   const avanceProgreso = (seccionActiva / secciones.length) * 100;
@@ -129,6 +126,101 @@ const HistorialClinico = () => {
     }
   };
 
+  const finalizarHistorial = async () => {
+    if (!validarSeccion()) return;
+    
+    setGenerandoPDF(true);
+    try {
+      // 1. Guardar todos los datos finales
+      await guardarHistorialCompleto();
+      
+      // 2. Generar PDF y guardarlo en base de datos
+      await generarYGuardarPDF();
+      
+      // 3. Descargar PDF local para impresión
+      await descargarPDFLocal();
+      
+      alert('Historial clínico completado y guardado exitosamente. El PDF se ha descargado automáticamente.');
+      
+    } catch (error) {
+      console.error('Error al finalizar historial:', error);
+      alert('Error al generar el PDF. Por favor, intente nuevamente.');
+    } finally {
+      setGenerandoPDF(false);
+    }
+  };
+
+  const guardarHistorialCompleto = async () => {
+    const historialCompleto = {
+      pacienteId,
+      fechaCreacion: new Date().toISOString(),
+      estado: 'completado',
+      datos: datosFormulario,
+      secciones: {
+        fichaIdentificacion: datosFormulario.fichaIdentificacion || {},
+        motivoConsulta: datosFormulario.motivoConsulta || {},
+        antecedentesHeredoFamiliares: datosFormulario.antecedentesHeredoFamiliares || {},
+        antecedentesPersonalesNoPatologicos: datosFormulario.antecedentesPersonalesNoPatologicos || {},
+        antecedentesPersonalesPatologicos: datosFormulario.antecedentesPersonalesPatologicos || {},
+        examenExtrabucal: datosFormulario.examenExtrabucal || {},
+        examenIntrabucal: datosFormulario.examenIntrabucal || {},
+        auxiliaresDiagnostico: datosFormulario.auxiliaresDiagnostico || {}
+      }
+    };
+
+    const response = await fetch(`/api/historial/${pacienteId}/completar`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(historialCompleto)
+    });
+
+    if (!response.ok) throw new Error('Error al guardar historial completo');
+    return response.json();
+  };
+
+  const generarYGuardarPDF = async () => {
+    const response = await fetch(`/api/historial/${pacienteId}/generar-pdf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        datos: datosFormulario,
+        pacienteId,
+        fechaGeneracion: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) throw new Error('Error al generar PDF en servidor');
+    return response.json();
+  };
+
+  const descargarPDFLocal = async () => {
+    const response = await fetch(`/api/historial/${pacienteId}/descargar-pdf`, {
+      method: 'GET'
+    });
+
+    if (!response.ok) throw new Error('Error al descargar PDF');
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    
+    // Nombre del archivo con fecha y datos del paciente
+    const nombrePaciente = `${datosFormulario.nombre || 'paciente'}_${datosFormulario.apellidoPaterno || ''}`.replace(/\s+/g, '_');
+    const fecha = new Date().toISOString().split('T')[0];
+    a.download = `historial_clinico_${nombrePaciente}_${fecha}.pdf`;
+    
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   const anteriorSeccion = () => {
     if (seccionActiva > 1) {
       setSeccionActiva(seccionActiva - 1);
@@ -146,10 +238,8 @@ const HistorialClinico = () => {
       case 5: return <AntecedentesPersonalesPatologicos {...seccionProps} />;
       case 6: return <ExamenBucal {...seccionProps} />;
       case 7: return <ExamenIntrabucal {...seccionProps} />;
-      case 8: return <Oclusion {...seccionProps} />;
-      case 9: return <AuxiliaresDiagnostico {...seccionProps} />;
-      case 10: return <DiagnosticoPronostico {...seccionProps} />;
-      case 11: return <PlanTratamiento {...seccionProps} />;
+      case 8: return <AuxiliaresDiagnostico {...seccionProps} />;
+      // Eliminados los casos 9 y 10
       default: return <FichaIdentificacion {...seccionProps} />;
     }
   };
@@ -197,10 +287,31 @@ const HistorialClinico = () => {
               Guardando
             </div>
           )}
-          <button className="btn btn-volver" onClick={anteriorSeccion} disabled={seccionActiva === 1}>← Anterior</button>
-          <button className="btn btn-siguiente" onClick={siguienteSeccion} disabled={guardando || seccionActiva === secciones.length}>
-            {guardando ? 'Guardando...' : 'Siguiente →'}
-          </button>
+          {generandoPDF && (
+            <div className="guardado-temporal guardando">
+              <div className="icono">📄</div>
+              Generando PDF...
+            </div>
+          )}
+          <button className="btn btn-volver" onClick={anteriorSeccion} disabled={seccionActiva === 1 || generandoPDF}>← Anterior</button>
+          
+          {seccionActiva === secciones.length ? (
+            <button 
+              className="btn btn-guardar-final" 
+              onClick={finalizarHistorial} 
+              disabled={guardando || generandoPDF}
+            >
+              {generandoPDF ? 'Generando PDF...' : '📄 Finalizar y Generar PDF'}
+            </button>
+          ) : (
+            <button 
+              className="btn btn-siguiente" 
+              onClick={siguienteSeccion} 
+              disabled={guardando || generandoPDF}
+            >
+              {guardando ? 'Guardando...' : 'Siguiente →'}
+            </button>
+          )}
         </div>
       </div>
     </div>

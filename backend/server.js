@@ -30,13 +30,13 @@ const authRoutes = require('./routes/auth');
 const usuariosRoutes = require('./routes/usuarios');
 const pacientesRoutes = require('./routes/pacientes');
 const citasRoutes = require('./routes/citas');
-const historialRoutes = require('./routes/historial');
+// const historialRoutes = require('./routes/historial');  // ← COMENTADA
 
 app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/pacientes', pacientesRoutes);
 app.use('/api/citas', citasRoutes);
-app.use('/api/historial', historialRoutes);
+// app.use('/api/historial', historialRoutes);  // ← COMENTADA
 
 // Ruta de prueba
 app.get('/api/test', (req, res) => {
@@ -51,7 +51,6 @@ app.use((err, req, res, next) => {
 
 // Iniciar servidor
 const startServer = async () => {
-    // Probar conexión a base de datos
     const dbConnected = await testConnection();
     if (!dbConnected) {
         console.error('❌ No se pudo conectar a la base de datos. Cerrando servidor...');

@@ -1,745 +1,619 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-const AuxiliaresDiagnostico = ({ data, onUpdate }) => {
+const AuxiliaresDiagnostico = ({ datos: externalData, onChange: externalOnChange, errores = {} }) => {
   const [formData, setFormData] = useState({
-    // Modelos de estudio
+    // 21. Modelos de estudio
     modelos_estudio: {
-      realizados: false,
-      hallazgos: '',
-      analisis_modelos: '',
-      fecha_toma: ''
+      hallazgos: ['', '', '', '', '', ''] // 6 líneas como en la imagen
     },
     
-    // Radiografías intraorales
-    radiografias_intraorales: [],
+    // 22. Estudio Radiográfico
+    radiografias_intraorales: [
+      { region: '', hallazgos: '' },
+      { region: '', hallazgos: '' },
+      { region: '', hallazgos: '' },
+      { region: '', hallazgos: '' }
+    ],
     
-    // Radiografías extraorales
-    radiografias_extraorales: [],
+    radiografias_extraorales: [
+      { tipo: '', hallazgos: '' },
+      { tipo: '', hallazgos: '' },
+      { tipo: '', hallazgos: '' }
+    ],
     
-    // Exámenes de laboratorio
+    // 23. Exámenes de laboratorio
     examenes_laboratorio: {
-      biometria_hematica: {
-        solicitado: false,
-        fecha: '',
-        hallazgo: ''
-      },
-      quimica_sanguinea: {
-        solicitado: false,
-        fecha: '',
-        hallazgo: ''
-      },
-      general_orina: {
-        solicitado: false,
-        fecha: '',
-        hallazgo: ''
-      },
-      pruebas_coagulacion: {
-        solicitado: false,
-        fecha: '',
-        hallazgo: ''
-      },
-      cultivo_antibiograma: {
-        solicitado: false,
-        fecha: '',
-        hallazgo: ''
-      },
-      otros_examenes: []
-    }
+      biometria_hematica: '',
+      quimica_sanguinea: '',
+      general_orina: '',
+      pruebas_sanguineas_coagulacion: '',
+      cultivo_antibiograma: '',
+      otros: ''
+    },
+    
+    // VI. Diagnóstico Integro
+    diagnostico_integro: ['', '', '', '', '', ''], // 6 líneas
+    
+    // V. Pronóstico
+    pronostico: ['', '', ''], // 3 líneas
+    
+    // VI. Plan de tratamiento
+    plan_tratamiento: ['', '', '', '', '', ''] // 6 líneas
   });
 
-  useEffect(() => {
-  if (data && Object.keys(data).length > 0) {
-    setFormData(prevData => ({ ...prevData, ...data })); // ✅ Usa función updater
-  }
-}, [data]); //
+  // Usar datos externos si están disponibles
+  const data = externalData || formData;
 
-  const handleChange = (section, field, value) => {
+  useEffect(() => {
+    if (externalData && Object.keys(externalData).length > 0) {
+      // Estructura por defecto sin usar formData para evitar dependencia
+      const dataWithDefaults = {
+        modelos_estudio: {
+          hallazgos: ['', '', '', '', '', ''],
+          ...externalData.modelos_estudio
+        },
+        radiografias_intraorales: externalData.radiografias_intraorales || [
+          { region: '', hallazgos: '' },
+          { region: '', hallazgos: '' },
+          { region: '', hallazgos: '' },
+          { region: '', hallazgos: '' }
+        ],
+        radiografias_extraorales: externalData.radiografias_extraorales || [
+          { tipo: '', hallazgos: '' },
+          { tipo: '', hallazgos: '' },
+          { tipo: '', hallazgos: '' }
+        ],
+        examenes_laboratorio: {
+          biometria_hematica: '',
+          quimica_sanguinea: '',
+          general_orina: '',
+          pruebas_sanguineas_coagulacion: '',
+          cultivo_antibiograma: '',
+          otros: '',
+          ...externalData.examenes_laboratorio
+        },
+        diagnostico_integro: externalData.diagnostico_integro || ['', '', '', '', '', ''],
+        pronostico: externalData.pronostico || ['', '', ''],
+        plan_tratamiento: externalData.plan_tratamiento || ['', '', '', '', '', ''],
+        ...externalData
+      };
+      setFormData(dataWithDefaults);
+    }
+  }, [externalData]);
+
+  const handleChange = useCallback((section, field, value) => {
     const newFormData = {
-      ...formData,
+      ...data,
       [section]: {
-        ...formData[section],
+        ...(data[section] || {}),
         [field]: value
       }
     };
-    setFormData(newFormData);
-    onUpdate(newFormData);
-  };
+    
+    if (externalOnChange) {
+      externalOnChange(newFormData);
+    } else {
+      setFormData(newFormData);
+    }
+  }, [data, externalOnChange]);
 
-  const handleDirectChange = (field, value) => {
+  const handleArrayChange = useCallback((section, index, value) => {
+    const currentArray = data[section] || [];
+    const newArray = [...currentArray];
+    newArray[index] = value;
+    
     const newFormData = {
-      ...formData,
+      ...data,
+      [section]: newArray
+    };
+    
+    if (externalOnChange) {
+      externalOnChange(newFormData);
+    } else {
+      setFormData(newFormData);
+    }
+  }, [data, externalOnChange]);
+
+  const handleObjectArrayChange = useCallback((section, index, field, value) => {
+    const currentArray = data[section] || [];
+    const newArray = [...currentArray];
+    newArray[index] = {
+      ...newArray[index],
       [field]: value
     };
-    setFormData(newFormData);
-    onUpdate(newFormData);
-  };
-
-  const handleNestedChange = (section, subsection, field, value) => {
+    
     const newFormData = {
-      ...formData,
-      [section]: {
-        ...formData[section],
-        [subsection]: {
-          ...formData[section][subsection],
-          [field]: value
-        }
-      }
+      ...data,
+      [section]: newArray
     };
-    setFormData(newFormData);
-    onUpdate(newFormData);
-  };
-
-  const handleArrayChange = (section, index, newItem) => {
-    const newArray = [...formData[section]];
-    if (index >= 0) {
-      newArray[index] = newItem;
+    
+    if (externalOnChange) {
+      externalOnChange(newFormData);
     } else {
-      newArray.push(newItem);
+      setFormData(newFormData);
     }
-    handleDirectChange(section, newArray);
-  };
+  }, [data, externalOnChange]);
 
-  const removeArrayItem = (section, index) => {
-    const newArray = formData[section].filter((_, i) => i !== index);
-    handleDirectChange(section, newArray);
-  };
+  // Función para agregar filas a radiografías si es necesario
+  const agregarRadiografiaIntraoral = useCallback(() => {
+    const currentArray = data.radiografias_intraorales || [];
+    const newArray = [...currentArray, { region: '', hallazgos: '' }];
+    
+    const newFormData = {
+      ...data,
+      radiografias_intraorales: newArray
+    };
+    
+    if (externalOnChange) {
+      externalOnChange(newFormData);
+    } else {
+      setFormData(newFormData);
+    }
+  }, [data, externalOnChange]);
 
-  // Tipos de radiografías
-  const tiposRadiografiasIntraorales = [
-    'Periapical',
-    'Bitewing',
-    'Oclusal',
-    'Endodóntica',
-    'Serie completa'
-  ];
+  const agregarRadiografiaExtraoral = useCallback(() => {
+    const currentArray = data.radiografias_extraorales || [];
+    const newArray = [...currentArray, { tipo: '', hallazgos: '' }];
+    
+    const newFormData = {
+      ...data,
+      radiografias_extraorales: newArray
+    };
+    
+    if (externalOnChange) {
+      externalOnChange(newFormData);
+    } else {
+      setFormData(newFormData);
+    }
+  }, [data, externalOnChange]);
 
-  const tiposRadiografiasExtraorales = [
-    'Panorámica',
-    'Lateral de cráneo',
-    'Posteroanterior',
-    'Submentovértex',
-    'Towne',
-    'Temporomandibular',
-    'Tomografía',
-    'CBCT'
-  ];
+  // Función para eliminar filas si es necesario
+  const eliminarRadiografiaIntraoral = useCallback((index) => {
+    const currentArray = data.radiografias_intraorales || [];
+    const newArray = currentArray.filter((_, i) => i !== index);
+    
+    const newFormData = {
+      ...data,
+      radiografias_intraorales: newArray
+    };
+    
+    if (externalOnChange) {
+      externalOnChange(newFormData);
+    } else {
+      setFormData(newFormData);
+    }
+  }, [data, externalOnChange]);
+
+  const eliminarRadiografiaExtraoral = useCallback((index) => {
+    const currentArray = data.radiografias_extraorales || [];
+    const newArray = currentArray.filter((_, i) => i !== index);
+    
+    const newFormData = {
+      ...data,
+      radiografias_extraorales: newArray
+    };
+    
+    if (externalOnChange) {
+      externalOnChange(newFormData);
+    } else {
+      setFormData(newFormData);
+    }
+  }, [data, externalOnChange]);
+
+  // Función de validación básica
+  const validarFormulario = useCallback(() => {
+    const errores = {};
+    
+    // Validar que al menos un auxiliar de diagnóstico esté completado
+    const tieneModelos = data.modelos_estudio?.hallazgos?.some(h => h.trim());
+    const tieneRadiografias = data.radiografias_intraorales?.some(r => r.region || r.hallazgos) || 
+                             data.radiografias_extraorales?.some(r => r.tipo || r.hallazgos);
+    const tieneLaboratorio = Object.values(data.examenes_laboratorio || {}).some(val => val?.trim());
+    
+    if (!tieneModelos && !tieneRadiografias && !tieneLaboratorio) {
+      errores.auxiliares = 'Debe completar al menos un tipo de auxiliar de diagnóstico';
+    }
+    
+    // Validar diagnóstico
+    const tieneDiagnostico = data.diagnostico_integro?.some(d => d.trim());
+    if (!tieneDiagnostico) {
+      errores.diagnostico = 'El diagnóstico integral es obligatorio';
+    }
+    
+    return errores;
+  }, [data]);
 
   return (
-    <div className="auxiliares-diagnostico">
-      <div className="form-section">
-        <h4>Modelos de Estudio</h4>
-        
-        <div className="form-group">
-          <div className="checkbox-group">
-            <input
-              type="checkbox"
-              id="modelos_realizados"
-              checked={formData.modelos_estudio.realizados}
-              onChange={(e) => handleChange('modelos_estudio', 'realizados', e.target.checked)}
-            />
-            <label htmlFor="modelos_realizados">¿Se realizaron modelos de estudio?</label>
-          </div>
-        </div>
-
-        {formData.modelos_estudio.realizados && (
-          <>
-            <div className="form-group">
-              <label htmlFor="fecha_toma_modelos">Fecha de Toma</label>
-              <input
-                type="date"
-                id="fecha_toma_modelos"
-                value={formData.modelos_estudio.fecha_toma}
-                onChange={(e) => handleChange('modelos_estudio', 'fecha_toma', e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="hallazgos_modelos">Hallazgos en Modelos</label>
-              <textarea
-                id="hallazgos_modelos"
-                value={formData.modelos_estudio.hallazgos}
-                onChange={(e) => handleChange('modelos_estudio', 'hallazgos', e.target.value)}
-                placeholder="Descripción de hallazgos encontrados en los modelos de estudio..."
-                rows="4"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="analisis_modelos">Análisis de Modelos</label>
-              <textarea
-                id="analisis_modelos"
-                value={formData.modelos_estudio.analisis_modelos}
-                onChange={(e) => handleChange('modelos_estudio', 'analisis_modelos', e.target.value)}
-                placeholder="Análisis cefalométrico, mediciones, relaciones intermaxilares..."
-                rows="4"
-              />
-            </div>
-          </>
-        )}
-      </div>
-
-      <div className="form-section">
-        <h4>Estudio Radiográfico - Radiografías Intraorales</h4>
-        
-        <div className="radiografias-section">
-          {formData.radiografias_intraorales.map((radiografia, index) => (
-            <div key={index} className="radiografia-item">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Tipo de Radiografía</label>
-                  <select
-                    value={radiografia.tipo || ''}
-                    onChange={(e) => handleArrayChange('radiografias_intraorales', index, {
-                      ...radiografia,
-                      tipo: e.target.value
-                    })}
-                  >
-                    <option value="">Seleccionar tipo</option>
-                    {tiposRadiografiasIntraorales.map((tipo) => (
-                      <option key={tipo} value={tipo}>{tipo}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>Región</label>
-                  <input
-                    type="text"
-                    value={radiografia.region || ''}
-                    onChange={(e) => handleArrayChange('radiografias_intraorales', index, {
-                      ...radiografia,
-                      region: e.target.value
-                    })}
-                    placeholder="Ej: Sector anterior superior, molar inferior derecho..."
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={radiografia.fecha || ''}
-                    onChange={(e) => handleArrayChange('radiografias_intraorales', index, {
-                      ...radiografia,
-                      fecha: e.target.value
-                    })}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => removeArrayItem('radiografias_intraorales', index)}
-                  className="btn-remove"
-                >
-                  🗑️
-                </button>
-              </div>
-
-              <div className="form-group">
-                <label>Hallazgos Radiográficos</label>
-                <textarea
-                  value={radiografia.hallazgos || ''}
-                  onChange={(e) => handleArrayChange('radiografias_intraorales', index, {
-                    ...radiografia,
-                    hallazgos: e.target.value
-                  })}
-                  placeholder="Describir hallazgos radiográficos..."
-                  rows="3"
-                />
-              </div>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => handleArrayChange('radiografias_intraorales', -1, {
-              tipo: '',
-              region: '',
-              fecha: '',
-              hallazgos: ''
-            })}
-            className="btn-add"
-          >
-            + Agregar Radiografía Intraoral
-          </button>
+    <div className="auxiliares-diagnostico-moderno">
+      
+      {/* Header de la sección */}
+      <div className="seccion-header-custom">
+        <div className="header-content">
+          <h3>V. AUXILIARES DE DIAGNÓSTICO</h3>
+          <p className="header-subtitle">
+            Estudios complementarios para el diagnóstico integral
+          </p>
         </div>
       </div>
 
-      <div className="form-section">
-        <h4>Radiografías Extraorales</h4>
-        
-        <div className="radiografias-section">
-          {formData.radiografias_extraorales.map((radiografia, index) => (
-            <div key={index} className="radiografia-item">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Tipo de Radiografía</label>
-                  <select
-                    value={radiografia.tipo || ''}
-                    onChange={(e) => handleArrayChange('radiografias_extraorales', index, {
-                      ...radiografia,
-                      tipo: e.target.value
-                    })}
-                  >
-                    <option value="">Seleccionar tipo</option>
-                    {tiposRadiografiasExtraorales.map((tipo) => (
-                      <option key={tipo} value={tipo}>{tipo}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={radiografia.fecha || ''}
-                    onChange={(e) => handleArrayChange('radiografias_extraorales', index, {
-                      ...radiografia,
-                      fecha: e.target.value
-                    })}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => removeArrayItem('radiografias_extraorales', index)}
-                  className="btn-remove"
-                >
-                  🗑️
-                </button>
-              </div>
-
-              <div className="form-group">
-                <label>Hallazgos Radiográficos</label>
-                <textarea
-                  value={radiografia.hallazgos || ''}
-                  onChange={(e) => handleArrayChange('radiografias_extraorales', index, {
-                    ...radiografia,
-                    hallazgos: e.target.value
-                  })}
-                  placeholder="Describir hallazgos radiográficos..."
-                  rows="3"
-                />
-              </div>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => handleArrayChange('radiografias_extraorales', -1, {
-              tipo: '',
-              fecha: '',
-              hallazgos: ''
-            })}
-            className="btn-add"
-          >
-            + Agregar Radiografía Extraoral
-          </button>
+      {/* 21. Modelos de estudio */}
+      <div className="form-section-card">
+        <div className="card-header">
+          <h4>21. Modelos de estudio</h4>
+          <span className="card-badge modelos-badge">Análisis de modelos</span>
         </div>
-      </div>
-
-      <div className="form-section">
-        <h4>Exámenes de Laboratorio</h4>
         
-        <div className="laboratorio-grid">
-          <div className="examen-item">
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                id="biometria_hematica"
-                checked={formData.examenes_laboratorio.biometria_hematica.solicitado}
-                onChange={(e) => handleNestedChange('examenes_laboratorio', 'biometria_hematica', 'solicitado', e.target.checked)}
-              />
-              <label htmlFor="biometria_hematica">Biometría Hemática</label>
-            </div>
-            
-            {formData.examenes_laboratorio.biometria_hematica.solicitado && (
-              <>
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={formData.examenes_laboratorio.biometria_hematica.fecha}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'biometria_hematica', 'fecha', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Hallazgo</label>
-                  <textarea
-                    value={formData.examenes_laboratorio.biometria_hematica.hallazgo}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'biometria_hematica', 'hallazgo', e.target.value)}
-                    placeholder="Resultados y valores relevantes..."
-                    rows="2"
-                  />
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="examen-item">
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                id="quimica_sanguinea"
-                checked={formData.examenes_laboratorio.quimica_sanguinea.solicitado}
-                onChange={(e) => handleNestedChange('examenes_laboratorio', 'quimica_sanguinea', 'solicitado', e.target.checked)}
-              />
-              <label htmlFor="quimica_sanguinea">Química Sanguínea</label>
-            </div>
-            
-            {formData.examenes_laboratorio.quimica_sanguinea.solicitado && (
-              <>
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={formData.examenes_laboratorio.quimica_sanguinea.fecha}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'quimica_sanguinea', 'fecha', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Hallazgo</label>
-                  <textarea
-                    value={formData.examenes_laboratorio.quimica_sanguinea.hallazgo}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'quimica_sanguinea', 'hallazgo', e.target.value)}
-                    placeholder="Glucosa, creatinina, urea, etc..."
-                    rows="2"
-                  />
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="examen-item">
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                id="general_orina"
-                checked={formData.examenes_laboratorio.general_orina.solicitado}
-                onChange={(e) => handleNestedChange('examenes_laboratorio', 'general_orina', 'solicitado', e.target.checked)}
-              />
-              <label htmlFor="general_orina">General de Orina</label>
-            </div>
-            
-            {formData.examenes_laboratorio.general_orina.solicitado && (
-              <>
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={formData.examenes_laboratorio.general_orina.fecha}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'general_orina', 'fecha', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Hallazgo</label>
-                  <textarea
-                    value={formData.examenes_laboratorio.general_orina.hallazgo}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'general_orina', 'hallazgo', e.target.value)}
-                    placeholder="Resultados del examen de orina..."
-                    rows="2"
-                  />
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="examen-item">
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                id="pruebas_coagulacion"
-                checked={formData.examenes_laboratorio.pruebas_coagulacion.solicitado}
-                onChange={(e) => handleNestedChange('examenes_laboratorio', 'pruebas_coagulacion', 'solicitado', e.target.checked)}
-              />
-              <label htmlFor="pruebas_coagulacion">Pruebas de Coagulación</label>
-            </div>
-            
-            {formData.examenes_laboratorio.pruebas_coagulacion.solicitado && (
-              <>
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={formData.examenes_laboratorio.pruebas_coagulacion.fecha}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'pruebas_coagulacion', 'fecha', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Hallazgo</label>
-                  <textarea
-                    value={formData.examenes_laboratorio.pruebas_coagulacion.hallazgo}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'pruebas_coagulacion', 'hallazgo', e.target.value)}
-                    placeholder="TP, TPT, INR, tiempo de sangrado..."
-                    rows="2"
-                  />
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="examen-item">
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                id="cultivo_antibiograma"
-                checked={formData.examenes_laboratorio.cultivo_antibiograma.solicitado}
-                onChange={(e) => handleNestedChange('examenes_laboratorio', 'cultivo_antibiograma', 'solicitado', e.target.checked)}
-              />
-              <label htmlFor="cultivo_antibiograma">Cultivo y Antibiograma</label>
-            </div>
-            
-            {formData.examenes_laboratorio.cultivo_antibiograma.solicitado && (
-              <>
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={formData.examenes_laboratorio.cultivo_antibiograma.fecha}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'cultivo_antibiograma', 'fecha', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Hallazgo</label>
-                  <textarea
-                    value={formData.examenes_laboratorio.cultivo_antibiograma.hallazgo}
-                    onChange={(e) => handleNestedChange('examenes_laboratorio', 'cultivo_antibiograma', 'hallazgo', e.target.value)}
-                    placeholder="Microorganismos identificados, sensibilidad antibiótica..."
-                    rows="2"
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="otros-examenes-section">
-          <h5>Otros Exámenes</h5>
-          {formData.examenes_laboratorio.otros_examenes.map((examen, index) => (
-            <div key={index} className="otro-examen-item">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Nombre del Examen</label>
-                  <input
-                    type="text"
-                    value={examen.nombre || ''}
-                    onChange={(e) => {
-                      const newArray = [...formData.examenes_laboratorio.otros_examenes];
-                      newArray[index] = { ...examen, nombre: e.target.value };
-                      handleChange('examenes_laboratorio', 'otros_examenes', newArray);
-                    }}
-                    placeholder="Ej: Perfil lipídico, TSH, etc."
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Fecha</label>
-                  <input
-                    type="date"
-                    value={examen.fecha || ''}
-                    onChange={(e) => {
-                      const newArray = [...formData.examenes_laboratorio.otros_examenes];
-                      newArray[index] = { ...examen, fecha: e.target.value };
-                      handleChange('examenes_laboratorio', 'otros_examenes', newArray);
-                    }}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newArray = formData.examenes_laboratorio.otros_examenes.filter((_, i) => i !== index);
-                    handleChange('examenes_laboratorio', 'otros_examenes', newArray);
-                  }}
-                  className="btn-remove"
-                >
-                  🗑️
-                </button>
-              </div>
-
-              <div className="form-group">
-                <label>Hallazgo</label>
-                <textarea
-                  value={examen.hallazgo || ''}
+        <div className="form-group-enhanced">
+          <p className="section-description">
+            (anexar análisis de modelos) Hallazgos
+          </p>
+          
+          <div className="modelos-lineas">
+            {(data.modelos_estudio?.hallazgos || ['', '', '', '', '', '']).map((linea, index) => (
+              <div key={index} className="linea-item">
+                <input
+                  type="text"
+                  className="linea-input"
+                  value={linea}
                   onChange={(e) => {
-                    const newArray = [...formData.examenes_laboratorio.otros_examenes];
-                    newArray[index] = { ...examen, hallazgo: e.target.value };
-                    handleChange('examenes_laboratorio', 'otros_examenes', newArray);
+                    const newHallazgos = [...(data.modelos_estudio?.hallazgos || ['', '', '', '', '', ''])];
+                    newHallazgos[index] = e.target.value;
+                    handleChange('modelos_estudio', 'hallazgos', newHallazgos);
                   }}
-                  placeholder="Resultados del examen..."
-                  rows="2"
+                  placeholder={`Hallazgo ${index + 1}...`}
                 />
               </div>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => {
-              const newArray = [...formData.examenes_laboratorio.otros_examenes, {
-                nombre: '',
-                fecha: '',
-                hallazgo: ''
-              }];
-              handleChange('examenes_laboratorio', 'otros_examenes', newArray);
-            }}
-            className="btn-add"
-          >
-            + Agregar Otro Examen
-          </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="info-note">
-        <p><strong>Importante:</strong> Los auxiliares de diagnóstico complementan el examen clínico y son fundamentales para establecer un diagnóstico preciso y planificar el tratamiento adecuado.</p>
+      {/* 22. Estudio Radiográfico */}
+      <div className="form-section-card">
+        <div className="card-header">
+          <h4>22. Estudio Radiográfico</h4>
+          <span className="card-badge radiografias-badge">Estudios de imagen</span>
+        </div>
+        
+        <div className="form-group-enhanced">
+          <div className="radiografias-section">
+            <div className="radiografias-subtitle">Radiografías Intraorales</div>
+            
+            <table className="tabla-auxiliares">
+              <thead>
+                <tr>
+                  <th className="col-categoria">Región</th>
+                  <th className="col-hallazgos">Hallazgos</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(data.radiografias_intraorales || []).map((radiografia, index) => (
+                  <tr key={index}>
+                    <td className="col-categoria" data-label="Región">
+                      <textarea
+                        className="tabla-textarea"
+                        value={radiografia.region}
+                        onChange={(e) => handleObjectArrayChange('radiografias_intraorales', index, 'region', e.target.value)}
+                        placeholder="Ej: Periapicales sector anterior, Bitewings..."
+                        style={{ minHeight: '40px' }}
+                      />
+                    </td>
+                    <td className="col-hallazgos" data-label="Hallazgos">
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                        <textarea
+                          className="tabla-textarea"
+                          value={radiografia.hallazgos}
+                          onChange={(e) => handleObjectArrayChange('radiografias_intraorales', index, 'hallazgos', e.target.value)}
+                          placeholder="Describir hallazgos radiográficos..."
+                          style={{ flex: 1 }}
+                        />
+                        {(data.radiografias_intraorales || []).length > 4 && (
+                          <button
+                            type="button"
+                            onClick={() => eliminarRadiografiaIntraoral(index)}
+                            style={{
+                              background: '#dc3545',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '4px 8px',
+                              cursor: 'pointer',
+                              fontSize: '12px'
+                            }}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            <button
+              type="button"
+              onClick={agregarRadiografiaIntraoral}
+              style={{
+                background: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '600',
+                marginTop: '12px'
+              }}
+            >
+              + Agregar Radiografía Intraoral
+            </button>
+          </div>
+
+          <div className="radiografias-section">
+            <div className="radiografias-subtitle">Radiografías Extraorales</div>
+            
+            <table className="tabla-auxiliares">
+              <thead>
+                <tr>
+                  <th className="col-tipo">Tipo de radiografía</th>
+                  <th className="col-hallazgos">Hallazgos</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(data.radiografias_extraorales || []).map((radiografia, index) => (
+                  <tr key={index}>
+                    <td className="col-tipo" data-label="Tipo de radiografía">
+                      <textarea
+                        className="tabla-textarea"
+                        value={radiografia.tipo}
+                        onChange={(e) => handleObjectArrayChange('radiografias_extraorales', index, 'tipo', e.target.value)}
+                        placeholder="Ej: Panorámica, Lateral de cráneo, Posteroanterior..."
+                        style={{ minHeight: '40px' }}
+                      />
+                    </td>
+                    <td className="col-hallazgos" data-label="Hallazgos">
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                        <textarea
+                          className="tabla-textarea"
+                          value={radiografia.hallazgos}
+                          onChange={(e) => handleObjectArrayChange('radiografias_extraorales', index, 'hallazgos', e.target.value)}
+                          placeholder="Describir hallazgos radiográficos..."
+                          style={{ flex: 1 }}
+                        />
+                        {(data.radiografias_extraorales || []).length > 3 && (
+                          <button
+                            type="button"
+                            onClick={() => eliminarRadiografiaExtraoral(index)}
+                            style={{
+                              background: '#dc3545',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '4px 8px',
+                              cursor: 'pointer',
+                              fontSize: '12px'
+                            }}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            <button
+              type="button"
+              onClick={agregarRadiografiaExtraoral}
+              style={{
+                background: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '600',
+                marginTop: '12px'
+              }}
+            >
+              + Agregar Radiografía Extraoral
+            </button>
+          </div>
+        </div>
       </div>
 
-      <style jsx>{`
-        .radiografias-section,
-        .otros-examenes-section {
-          background: #f8f9fa;
-          padding: 20px;
-          border-radius: 8px;
-          margin: 15px 0;
-        }
+      {/* 23. Exámenes de laboratorio */}
+      <div className="form-section-card">
+        <div className="card-header">
+          <h4>23. Exámenes de laboratorio</h4>
+          <span className="card-badge laboratorio-badge">Estudios complementarios</span>
+        </div>
+        
+        <div className="form-group-enhanced">
+          <table className="tabla-auxiliares">
+            <thead>
+              <tr>
+                <th className="col-estudio">Estudio</th>
+                <th className="col-hallazgos">Hallazgo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="col-estudio" data-label="Estudio">
+                  Biometría hemática
+                </td>
+                <td className="col-hallazgos" data-label="Hallazgo">
+                  <textarea
+                    className="tabla-textarea"
+                    value={data.examenes_laboratorio?.biometria_hematica || ''}
+                    onChange={(e) => handleChange('examenes_laboratorio', 'biometria_hematica', e.target.value)}
+                    placeholder="Resultados de biometría hemática..."
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="col-estudio" data-label="Estudio">
+                  Química Sanguínea
+                </td>
+                <td className="col-hallazgos" data-label="Hallazgo">
+                  <textarea
+                    className="tabla-textarea"
+                    value={data.examenes_laboratorio?.quimica_sanguinea || ''}
+                    onChange={(e) => handleChange('examenes_laboratorio', 'quimica_sanguinea', e.target.value)}
+                    placeholder="Resultados de química sanguínea..."
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="col-estudio" data-label="Estudio">
+                  General de orina
+                </td>
+                <td className="col-hallazgos" data-label="Hallazgo">
+                  <textarea
+                    className="tabla-textarea"
+                    value={data.examenes_laboratorio?.general_orina || ''}
+                    onChange={(e) => handleChange('examenes_laboratorio', 'general_orina', e.target.value)}
+                    placeholder="Resultados de examen general de orina..."
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="col-estudio" data-label="Estudio">
+                  Pruebas sanguíneas tiempo de sangrado y coagulación
+                </td>
+                <td className="col-hallazgos" data-label="Hallazgo">
+                  <textarea
+                    className="tabla-textarea"
+                    value={data.examenes_laboratorio?.pruebas_sanguineas_coagulacion || ''}
+                    onChange={(e) => handleChange('examenes_laboratorio', 'pruebas_sanguineas_coagulacion', e.target.value)}
+                    placeholder="Resultados de tiempos de sangrado y coagulación..."
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="col-estudio" data-label="Estudio">
+                  Cultivo y antibiograma
+                </td>
+                <td className="col-hallazgos" data-label="Hallazgo">
+                  <textarea
+                    className="tabla-textarea"
+                    value={data.examenes_laboratorio?.cultivo_antibiograma || ''}
+                    onChange={(e) => handleChange('examenes_laboratorio', 'cultivo_antibiograma', e.target.value)}
+                    placeholder="Resultados de cultivo y antibiograma..."
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="col-estudio" data-label="Estudio">
+                  Otros
+                </td>
+                <td className="col-hallazgos" data-label="Hallazgo">
+                  <textarea
+                    className="tabla-textarea"
+                    value={data.examenes_laboratorio?.otros || ''}
+                    onChange={(e) => handleChange('examenes_laboratorio', 'otros', e.target.value)}
+                    placeholder="Otros exámenes de laboratorio..."
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-        .radiografia-item,
-        .otro-examen-item {
-          background: white;
-          padding: 15px;
-          border-radius: 8px;
-          margin-bottom: 15px;
-          border: 1px solid #e9ecef;
-        }
+      {/* VI. Diagnóstico Integro */}
+      <div className="form-section-card">
+        <div className="card-header">
+          <h4>VI. DIAGNÓSTICO INTEGRO</h4>
+          <span className="card-badge diagnostico-badge">Diagnóstico final</span>
+        </div>
+        
+        <div className="form-group-enhanced">
+          <div className="area-texto-grande">
+            <div className="lineas-diagnostico">
+              {(data.diagnostico_integro || ['', '', '', '', '', '']).map((linea, index) => (
+                <div key={index} className="linea-diagnostico">
+                  <input
+                    type="text"
+                    value={linea}
+                    onChange={(e) => handleArrayChange('diagnostico_integro', index, e.target.value)}
+                    placeholder={`Diagnóstico ${index + 1}...`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
-        .laboratorio-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 20px;
-          margin: 15px 0;
-        }
+      {/* V. Pronóstico */}
+      <div className="form-section-card">
+        <div className="card-header">
+          <h4>V. PRONÓSTICO</h4>
+          <span className="card-badge pronostico-badge">Pronóstico</span>
+        </div>
+        
+        <div className="form-group-enhanced">
+          <div className="area-texto-grande">
+            <div className="lineas-diagnostico">
+              {(data.pronostico || ['', '', '']).map((linea, index) => (
+                <div key={index} className="linea-diagnostico">
+                  <input
+                    type="text"
+                    value={linea}
+                    onChange={(e) => handleArrayChange('pronostico', index, e.target.value)}
+                    placeholder={`Pronóstico ${index + 1}...`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
-        .examen-item {
-          background: #f8f9fa;
-          padding: 15px;
-          border-radius: 8px;
-          border: 1px solid #e9ecef;
-        }
+      {/* VI. Plan de Tratamiento */}
+      <div className="form-section-card">
+        <div className="card-header">
+          <h4>VI. PLAN DE TRATAMIENTO</h4>
+          <span className="card-badge plan-badge">Plan terapéutico</span>
+        </div>
+        
+        <div className="form-group-enhanced">
+          <div className="area-texto-grande">
+            <div className="lineas-diagnostico">
+              {(data.plan_tratamiento || ['', '', '', '', '', '']).map((linea, index) => (
+                <div key={index} className="linea-diagnostico">
+                  <input
+                    type="text"
+                    value={linea}
+                    onChange={(e) => handleArrayChange('plan_tratamiento', index, e.target.value)}
+                    placeholder={`Plan de tratamiento ${index + 1}...`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
-        .checkbox-group {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 15px;
-        }
+      {/* Nota informativa */}
+      <div className="info-note-enhanced">
+        <div className="info-icon">ℹ️</div>
+        <div className="info-content">
+          <h6>Información importante</h6>
+          <p>
+            Los auxiliares de diagnóstico son fundamentales para establecer un diagnóstico 
+            preciso y completo. Registre todos los hallazgos de estudios complementarios, 
+            radiografías y exámenes de laboratorio que contribuyan al diagnóstico integral 
+            y pronóstico del paciente.
+          </p>
+        </div>
+      </div>
 
-        .checkbox-group input[type="checkbox"] {
-          width: 18px;
-          height: 18px;
-          margin: 0;
-        }
-
-        .checkbox-group label {
-          margin: 0;
-          cursor: pointer;
-          font-size: 15px;
-          color: #2c3e50;
-          font-weight: 600;
-        }
-
-        .btn-add {
-          background-color: #28a745;
-          color: white;
-          border: none;
-          padding: 10px 16px;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 500;
-          margin-top: 15px;
-          transition: background-color 0.3s ease;
-        }
-
-        .btn-add:hover {
-          background-color: #218838;
-        }
-
-        .btn-remove {
-          background-color: #dc3545;
-          color: white;
-          border: none;
-          padding: 8px 12px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 12px;
-          align-self: center;
-          transition: background-color 0.3s ease;
-        }
-
-        .btn-remove:hover {
-          background-color: #c82333;
-        }
-
-        .otros-examenes-section h5 {
-          color: #495057;
-          margin-bottom: 15px;
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        .info-note {
-          margin-top: 25px;
-          padding: 15px;
-          background-color: #e8f4fd;
-          border-left: 4px solid #007bff;
-          border-radius: 0 8px 8px 0;
-        }
-
-        .info-note p {
-          margin: 0;
-          color: #2c3e50;
-          font-size: 14px;
-        }
-
-        .form-section {
-          margin-bottom: 30px;
-          padding-bottom: 25px;
-          border-bottom: 1px solid #ecf0f1;
-        }
-
-        .form-section:last-child {
-          border-bottom: none;
-        }
-
-        .form-section h4 {
-          color: #2c3e50;
-          margin-bottom: 15px;
-          font-size: 18px;
-          font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-          .laboratorio-grid {
-            grid-template-columns: 1fr;
-            gap: 15px;
-          }
-
-          .radiografia-item .form-row,
-          .otro-examen-item .form-row {
-            grid-template-columns: 1fr;
-            gap: 10px;
-          }
-
-          .examen-item {
-            padding: 12px;
-          }
-
-          .radiografias-section,
-          .otros-examenes-section {
-            padding: 15px;
-          }
-        }
-      `}</style>
     </div>
   );
 };

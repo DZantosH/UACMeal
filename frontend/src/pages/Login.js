@@ -39,71 +39,66 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <div className="login-header-bar">
-        <span>Login</span>
-      </div>
+      {/* Panel lateral izquierdo - celeste */}
+      <div className="login-side-panel"></div>
       
-      <div className="login-main">
-        <div className="login-side-panel left-panel"></div>
-        
-        <div className="login-center-panel">
-          <div className="login-content">
-            <h1 className="login-title">Odon-SISTEMA</h1>
-            
-            <div className="login-form-container">
-              <form onSubmit={handleSubmit}>
-                <div className="form-field">
-                  <div className="input-with-icon">
-                    <span className="input-icon">👤</span>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="ID del usuario"
-                      required
-                    />
-                  </div>
+      {/* Panel central - morado */}
+      <div className="login-center-panel">
+        <div className="login-content">
+          <h1 className="login-title">Odon-SISTEMA</h1>
+          
+          <div className="login-form-container">
+            <form onSubmit={handleSubmit}>
+              {/* Campo Usuario */}
+              <div className="form-field">
+                <div className="input-with-icon">
+                  <span className="input-icon">👤</span>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="brandonrbarrera@gmail.com"
+                    required
+                  />
                 </div>
-                
-                <div className="form-field">
-                  <label className="field-label">Contraseña</label>
-                  <div className="input-with-icon">
-                    <span className="input-icon">🔒</span>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Contraseñas"
-                      required
-                    />
-                  </div>
-                  <small className="forgot-password">Olvido su contraseña</small>
+              </div>
+              
+              {/* Campo Contraseña */}
+              <div className="form-field">
+                <label className="field-label">Contraseña</label>
+                <div className="input-with-icon">
+                  <span className="input-icon">🔒</span>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                  />
                 </div>
-                
-                {error && <div className="error-message">{error}</div>}
-                
-                <button 
-                  type="submit" 
-                  className="login-submit-btn"
-                  disabled={loading}
-                >
-                  {loading ? 'Iniciando...' : 'Iniciar Sesión'}
-                </button>
-              </form>
-            </div>
+                <small className="forgot-password">Olvidó su contraseña</small>
+              </div>
+              
+              {/* Mensaje de error */}
+              {error && <div className="error-message">{error}</div>}
+              
+              {/* Botón submit */}
+              <button 
+                type="submit" 
+                className="login-submit-btn"
+                disabled={loading}
+              >
+                {loading ? 'Iniciando...' : 'Iniciar Sesión'}
+              </button>
+            </form>
           </div>
         </div>
-        
-        <div className="login-side-panel right-panel"></div>
       </div>
       
-      <div className="login-footer">
-        <div className="footer-content">
-          <span className="footer-logo">🦷</span>
-        </div>
-      </div>
+      {/* Panel lateral derecho - celeste */}
+      <div className="login-right-panel"></div>
     </div>
   );
 };

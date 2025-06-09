@@ -1,48 +1,105 @@
+// middleware/auth.js
 const jwt = require('jsonwebtoken');
+const { pool } = require('../config/database');
 
-// Middleware para verificar token JWT
-const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+// Middleware de verificación de token
+const verifyToken = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
     
-    if (!token) {
-        return res.status(401).json({ error: 'Acceso denegado. Token requerido.' });
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        error: 'Token no proporcionado',
+        needsAuth: true 
+      });
     }
 
+    const token = authHeader.split(' ')[1];
+    
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'clave-secreta-temporal');
+      req.user = decoded;
+      next();
     } catch (error) {
-        res.status(400).json({ error: 'Token inválido.' });
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ 
+          error: 'Token expirado', 
+          needsRefresh: true,
+          expiredAt: error.expiredAt
+        });
+      } else if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({ 
+          error: 'Token inválido',
+          needsAuth: true 
+        });
+      } else {
+        throw error;
+      }
     }
+  } catch (error) {
+    console.error('Error en verificación de token:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };
 
-// Middleware para verificar roles específicos
-const verifyRole = (roles) => {
-    return (req, res, next) => {
-        if (!req.user) {
-            return res.status(401).json({ error: 'Usuario no autenticado.' });
-        }
-
-        if (!roles.includes(req.user.rol)) {
-            return res.status(403).json({ error: 'No tienes permisos para realizar esta acción.' });
-        }
-
-        next();
-    };
+// Middleware para verificar roles (Doctor o Secretaria)
+const verifyDoctorOrSecretaria = async (req, res, next) => {
+  try {
+    // El token ya fue verificado por verifyToken
+    const userRole = req.user.rol;
+    
+    if (userRole !== 'Doctor' && userRole !== 'Secretaria') {
+      return res.status(403).json({ 
+        error: 'Acceso denegado. Se requiere rol de Doctor o Secretaria' 
+      });
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Error en verificación de rol:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };
 
-// Middleware específicos por rol
-const verifyAdmin = verifyRole(['Administrador']);
-const verifyDoctor = verifyRole(['Doctor', 'Administrador']);
-const verifySecretaria = verifyRole(['Secretaria', 'Administrador']);
-const verifyDoctorOrSecretaria = verifyRole(['Doctor', 'Secretaria', 'Administrador']);
+// Middleware para verificar solo Doctor
+const verifyDoctor = async (req, res, next) => {
+  try {
+    const userRole = req.user.rol;
+    
+    if (userRole !== 'Doctor') {
+      return res.status(403).json({ 
+        error: 'Acceso denegado. Se requiere rol de Doctor' 
+      });
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Error en verificación de rol de doctor:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+// Middleware para verificar solo Administrador
+const verifyAdmin = async (req, res, next) => {
+  try {
+    const userRole = req.user.rol;
+    
+    if (userRole !== 'Administrador') {
+      return res.status(403).json({ 
+        error: 'Acceso denegado. Se requiere rol de Administrador' 
+      });
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Error en verificación de rol de admin:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
 
 module.exports = {
-    verifyToken,
-    verifyRole,
-    verifyAdmin,
-    verifyDoctor,
-    verifySecretaria,
-    verifyDoctorOrSecretaria
+  verifyToken,
+  verifyDoctorOrSecretaria,
+  verifyDoctor,
+  verifyAdmin
 };

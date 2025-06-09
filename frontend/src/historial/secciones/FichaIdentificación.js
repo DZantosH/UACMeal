@@ -2,119 +2,188 @@ import React from 'react';
 
 const FichaIdentificacion = ({ datos, errores, onChange }) => {
   return (
-    <div className="form-section">
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="nombre">Nombre:</label>
-          <input
-            type="text"
-            id="nombre"
-            name="nombre"
-            className="form-input"
-            value={datos.nombre || ''}
-            onChange={(e) => onChange('nombre', e.target.value)}
-            placeholder="Nombre del paciente"
-          />
-          {errores.nombre && <span className="error-text">{errores.nombre}</span>}
+    <div className="ficha-identificacion-container">
+      {/* Header personalizado - MÁS GRANDE Y VISIBLE */}
+      <div className="ficha-header">
+        <h3 className="ficha-header-title">🆔 Ficha de Identificación</h3>
+        <p className="ficha-header-subtitle">
+          Información personal y datos de contacto del paciente
+        </p>
+      </div>
+
+      {/* Sección de Datos Personales - MÁS ESPACIOSA */}
+      <div className="ficha-card">
+        <div className="ficha-card-header">
+          <h4 className="ficha-card-title">👤 Datos Personales</h4>
+          <span className="ficha-badge ficha-badge-obligatorio">Obligatorio</span>
         </div>
-        <div className="form-group">
-          <label htmlFor="apellidoPaterno">Apellido Paterno:</label>
-          <input
-            type="text"
-            id="apellidoPaterno"
-            name="apellidoPaterno"
-            className="form-input"
-            value={datos.apellidoPaterno || ''}
-            onChange={(e) => onChange('apellidoPaterno', e.target.value)}
-            placeholder="Apellido Paterno"
-          />
-          {errores.apellidoPaterno && <span className="error-text">{errores.apellidoPaterno}</span>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="apellidoMaterno">Apellido Materno:</label>
-          <input
-            type="text"
-            id="apellidoMaterno"
-            name="apellidoMaterno"
-            className="form-input"
-            value={datos.apellidoMaterno || ''}
-            onChange={(e) => onChange('apellidoMaterno', e.target.value)}
-            placeholder="Apellido Materno"
-          />
-          {errores.apellidoMaterno && <span className="error-text">{errores.apellidoMaterno}</span>}
+        <div className="ficha-form-group">
+          <div className="ficha-grid-3">
+            <div className="ficha-field">
+              <label className="ficha-label">Nombre(s) *</label>
+              <input
+                type="text"
+                className={`ficha-input ${errores.nombre ? 'ficha-input-error' : ''}`}
+                value={datos.nombre || ''}
+                onChange={(e) => onChange('nombre', e.target.value)}
+                placeholder="Nombre completo del paciente"
+              />
+              {errores.nombre && (
+                <span className="ficha-error-message">
+                  {errores.nombre}
+                </span>
+              )}
+            </div>
+
+            <div className="ficha-field">
+              <label className="ficha-label">Apellido Paterno *</label>
+              <input
+                type="text"
+                className={`ficha-input ${errores.apellidoPaterno ? 'ficha-input-error' : ''}`}
+                value={datos.apellidoPaterno || ''}
+                onChange={(e) => onChange('apellidoPaterno', e.target.value)}
+                placeholder="Apellido paterno"
+              />
+              {errores.apellidoPaterno && (
+                <span className="ficha-error-message">
+                  {errores.apellidoPaterno}
+                </span>
+              )}
+            </div>
+
+            <div className="ficha-field">
+              <label className="ficha-label">Apellido Materno *</label>
+              <input
+                type="text"
+                className={`ficha-input ${errores.apellidoMaterno ? 'ficha-input-error' : ''}`}
+                value={datos.apellidoMaterno || ''}
+                onChange={(e) => onChange('apellidoMaterno', e.target.value)}
+                placeholder="Apellido materno"
+              />
+              {errores.apellidoMaterno && (
+                <span className="ficha-error-message">
+                  {errores.apellidoMaterno}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="sexo">Sexo:</label>
-          <select
-            id="sexo"
-            name="sexo"
-            className="form-select"
-            value={datos.sexo || ''}
-            onChange={(e) => onChange('sexo', e.target.value)}
-          >
-            <option value="">Selecciona una opción</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
-          </select>
-          {errores.sexo && <span className="error-text">{errores.sexo}</span>}
+      {/* Sección de Información Demográfica - MÁS ESPACIOSA */}
+      <div className="ficha-card">
+        <div className="ficha-card-header">
+          <h4 className="ficha-card-title">📊 Información Demográfica</h4>
+          <span className="ficha-badge ficha-badge-demografico">Básico</span>
         </div>
-        <div className="form-group">
-          <label htmlFor="fechaNacimiento">Fecha de Nacimiento:</label>
-          <input
-            type="date"
-            id="fechaNacimiento"
-            name="fechaNacimiento"
-            className="form-input"
-            value={datos.fechaNacimiento || ''}
-            onChange={(e) => onChange('fechaNacimiento', e.target.value)}
-          />
-          {errores.fechaNacimiento && <span className="error-text">{errores.fechaNacimiento}</span>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="rfc">RFC:</label>
-          <input
-            type="text"
-            id="rfc"
-            name="rfc"
-            className="form-input"
-            value={datos.rfc || ''}
-            onChange={(e) => onChange('rfc', e.target.value)}
-            placeholder="RFC del paciente"
-          />
-          {errores.rfc && <span className="error-text">{errores.rfc}</span>}
+        <div className="ficha-form-group">
+          <div className="ficha-grid-3">
+            <div className="ficha-field">
+              <label className="ficha-label">Sexo *</label>
+              <select
+                className={`ficha-input ficha-select ${errores.sexo ? 'ficha-input-error' : ''}`}
+                value={datos.sexo || ''}
+                onChange={(e) => onChange('sexo', e.target.value)}
+              >
+                <option value="">Selecciona una opción</option>
+                <option value="Masculino">👨 Masculino</option>
+                <option value="Femenino">👩 Femenino</option>
+                <option value="Otro">⚧ Otro</option>
+              </select>
+              {errores.sexo && (
+                <span className="ficha-error-message">
+                  {errores.sexo}
+                </span>
+              )}
+            </div>
+
+            <div className="ficha-field">
+              <label className="ficha-label">📅 Fecha de Nacimiento *</label>
+              <input
+                type="date"
+                className={`ficha-input ${errores.fechaNacimiento ? 'ficha-input-error' : ''}`}
+                value={datos.fechaNacimiento || ''}
+                onChange={(e) => onChange('fechaNacimiento', e.target.value)}
+              />
+              {errores.fechaNacimiento && (
+                <span className="ficha-error-message">
+                  {errores.fechaNacimiento}
+                </span>
+              )}
+            </div>
+
+            <div className="ficha-field">
+              <label className="ficha-label">🆔 RFC *</label>
+              <input
+                type="text"
+                className={`ficha-input ficha-input-uppercase ${errores.rfc ? 'ficha-input-error' : ''}`}
+                value={datos.rfc || ''}
+                onChange={(e) => onChange('rfc', e.target.value.toUpperCase())}
+                placeholder="XXXX000000XXX"
+                maxLength="13"
+              />
+              {errores.rfc && (
+                <span className="ficha-error-message">
+                  {errores.rfc}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="telefono">Teléfono:</label>
-          <input
-            type="tel"
-            id="telefono"
-            name="telefono"
-            className="form-input"
-            value={datos.telefono || ''}
-            onChange={(e) => onChange('telefono', e.target.value)}
-            placeholder="Teléfono de contacto"
-          />
-          {errores.telefono && <span className="error-text">{errores.telefono}</span>}
+      {/* Sección de Contacto - MÁS ESPACIOSA */}
+      <div className="ficha-card">
+        <div className="ficha-card-header">
+          <h4 className="ficha-card-title">📞 Información de Contacto</h4>
+          <span className="ficha-badge ficha-badge-contacto">Contacto</span>
         </div>
-        <div className="form-group">
-          <label htmlFor="email">Correo Electrónico:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="form-input"
-            value={datos.email || ''}
-            onChange={(e) => onChange('email', e.target.value)}
-            placeholder="ejemplo@correo.com"
-          />
-          {errores.email && <span className="error-text">{errores.email}</span>}
+        <div className="ficha-form-group">
+          <div className="ficha-grid-2">
+            <div className="ficha-field">
+              <label className="ficha-label">📱 Teléfono *</label>
+              <input
+                type="tel"
+                className={`ficha-input ${errores.telefono ? 'ficha-input-error' : ''}`}
+                value={datos.telefono || ''}
+                onChange={(e) => onChange('telefono', e.target.value)}
+                placeholder="55 1234 5678"
+              />
+              {errores.telefono && (
+                <span className="ficha-error-message">
+                  {errores.telefono}
+                </span>
+              )}
+            </div>
+
+            <div className="ficha-field">
+              <label className="ficha-label">📧 Correo Electrónico *</label>
+              <input
+                type="email"
+                className={`ficha-input ${errores.email ? 'ficha-input-error' : ''}`}
+                value={datos.email || ''}
+                onChange={(e) => onChange('email', e.target.value)}
+                placeholder="ejemplo@correo.com"
+              />
+              {errores.email && (
+                <span className="ficha-error-message">
+                  {errores.email}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nota informativa - MÁS GRANDE Y VISIBLE */}
+      <div className="ficha-info-note">
+        <div className="ficha-info-icon">ℹ️</div>
+        <div className="ficha-info-content">
+          <h6 className="ficha-info-title">Información importante</h6>
+          <p className="ficha-info-text">
+            Todos los campos marcados con asterisco (*) son obligatorios. 
+            Esta información será utilizada para crear el expediente médico del paciente.
+          </p>
         </div>
       </div>
     </div>

@@ -1,268 +1,526 @@
-// backend/routes/citas.js
 const express = require('express');
+const { body, validationResult } = require('express-validator');
+const { verifyToken } = require('../middleware/auth');
 const { pool } = require('../config/database');
 const router = express.Router();
 
-// POST - Agendar nueva cita
-router.post('/', async (req, res) => {
-  console.log('=== NUEVA CITA REQUEST ===');
-  console.log('Body recibido:', req.body);
+
+// ✅ MIDDLEWARE PERSONALIZADO PARA PACIENTES
+const verifyPacientesAccess = (req, res, next) => {
+  const userRole = req.user.rol;
   
+  // Permitir acceso a Administradores, Doctores y Secretarias
+  if (userRole === 'Administrador' || userRole === 'Doctor' || userRole === 'Secretaria') {
+    next();
+  } else {
+    return res.status(403).json({ 
+      error: 'Acceso denegado. Se requiere rol de Administrador, Doctor o Secretaria' 
+    });
+  }
+};
+
+// 🔧 ENDPOINT PRINCIPAL MEJORADO PARA OBTENER PACIENTES
+router.get('/', verifyToken, verifyPacientesAccess, async (req, res) => {
   try {
-    const { paciente_id, nombre_paciente, tipo_consulta, fecha_consulta, horario_consulta, doctor_id, observaciones } = req.body;
+    console.log('📋 GET /pacientes - Iniciando consulta');
+    console.log('👤 Usuario:', req.user?.nombre, 'Rol:', req.user?.rol);
     
-    console.log('Datos extraídos:');
-    console.log('- paciente_id:', paciente_id);
-    console.log('- nombre_paciente:', nombre_paciente);
-    console.log('- tipo_consulta:', tipo_consulta);
-    console.log('- fecha_consulta:', fecha_consulta);
-    console.log('- horario_consulta:', horario_consulta);
-    console.log('- doctor_id:', doctor_id);
+    // Query mejorada con mejor manejo de campos NULL
+    const query = `
+      SELECT 
+        id, 
+        COALESCE(nombre, '') as nombre, 
+        COALESCE(apellido_paterno, '') as apellido_paterno, 
+        COALESCE(apellido_materno, '') as apellido_materno, 
+        fecha_nacimiento, 
+        telefono, 
+        correo_electronico, 
+        direccion,
+        COALESCE(estado, 'Activo') as estado, 
+        fecha_expiracion, 
+        fecha_registro,
+        activo,
+        CASE 
+          WHEN COALESCE(estado, 'Activo') = 'Temporal' THEN 
+            CONCAT(
+              COALESCE(nombre, ''), 
+              CASE WHEN COALESCE(nombre, '') != '' AND COALESCE(apellido_paterno, '') != '' THEN ' ' ELSE '' END,
+              COALESCE(apellido_paterno, ''), 
+              CASE WHEN COALESCE(apellido_materno, '') != '' THEN CONCAT(' ', apellido_materno) ELSE '' END,
+              ' (Temporal)'
+            )
+          ELSE 
+            CONCAT(
+              COALESCE(nombre, ''), 
+              CASE WHEN COALESCE(nombre, '') != '' AND COALESCE(apellido_paterno, '') != '' THEN ' ' ELSE '' END,
+              COALESCE(apellido_paterno, ''), 
+              CASE WHEN COALESCE(apellido_materno, '') != '' THEN CONCAT(' ', apellido_materno) ELSE '' END
+            )
+        END as nombre_completo_con_estado
+      FROM pacientes 
+      WHERE activo = 1 OR activo = TRUE
+      ORDER BY 
+        CASE WHEN COALESCE(estado, 'Activo') = 'Temporal' THEN 1 ELSE 0 END,
+        fecha_registro DESC
+    `;
     
-    // Validar datos requeridos
-    if ((!paciente_id && !nombre_paciente) || !tipo_consulta || !fecha_consulta || !horario_consulta || !doctor_id) {
-      console.log('ERROR: Faltan campos requeridos');
-      return res.status(400).json({ message: 'Faltan campos requeridos' });
-    }
-
-    // Validaciones de fecha y hora
-const fechaHoy = new Date().toISOString().split('T')[0];
-const horaValida = citaData.horario_consulta >= '11:00' && citaData.horario_consulta <= '20:00';
-const fechaValida = citaData.fecha_consulta >= fechaHoy;
-
-if (!fechaValida) {
-  return res.status(400).json({ message: "La fecha de la cita no puede ser anterior a hoy." });
-}
-
-if (!horaValida) {
-  return res.status(400).json({ message: "El horario debe ser entre 11:00 y 20:00." });
-}
-
+    console.log('🔍 Ejecutando query:', query.replace(/\s+/g, ' ').trim());
     
-    // Mapear tipo_consulta a los valores de tu enum
-    const tiposCitaValidos = {
-      'Consulta General': 'Consulta',
-      'Limpieza Dental': 'Limpieza',
-      'Extracción': 'Extraccion',
-      'Endodoncia': 'Consulta',
-      'Ortodoncia': 'Consulta',
-      'Implante': 'Consulta',
-      'Cirugía Oral': 'Consulta',
-      'Revisión': 'Control'
-    };
+    const [rows] = await pool.execute(query);
     
-    const tipoCitaDB = tiposCitaValidos[tipo_consulta] || 'Consulta';
-    console.log('Tipo de cita mapeado:', tipoCitaDB);
+    console.log('✅ Consulta exitosa. Pacientes encontrados:', rows.length);
     
-    let finalPacienteId = paciente_id;
-    let nombrePacienteParaCita = nombre_paciente;
-    
-    // Si no hay paciente_id, crear un paciente temporal
-    if (!paciente_id && nombre_paciente) {
-      console.log('Creando paciente temporal para:', nombre_paciente);
-      try {
-        const [pacienteResult] = await pool.execute(
-          `INSERT INTO pacientes (nombre, apellido_paterno, apellido_materno, fecha_nacimiento, sexo, activo, fecha_creacion)
-           VALUES (?, 'Temporal', '', '1900-01-01', 'M', 1, NOW())`,
-          [nombre_paciente.trim()]
-        );
-        finalPacienteId = pacienteResult.insertId;
-        console.log('Paciente temporal creado con ID:', finalPacienteId);
-      } catch (pacienteError) {
-        console.error('Error creando paciente temporal:', pacienteError);
-        return res.status(500).json({ message: 'Error al crear paciente temporal: ' + pacienteError.message });
-      }
+    if (rows.length === 0) {
+      console.log('ℹ️ No se encontraron pacientes activos');
+    } else {
+      console.log('📊 Primeros 3 pacientes:', rows.slice(0, 3).map(p => ({
+        id: p.id,
+        nombre: p.nombre,
+        apellido_paterno: p.apellido_paterno,
+        estado: p.estado,
+        nombre_completo: p.nombre_completo_con_estado
+      })));
     }
     
-    console.log('Final paciente_id:', finalPacienteId);
+    // Enviar respuesta con headers apropiados
+    res.set({
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
     
-    // Verificar conflictos de horario
-    console.log('Verificando conflictos de horario...');
-    const [existingCita] = await pool.execute(
-      `SELECT id FROM citas 
-       WHERE fecha_cita = ? AND hora_cita = ? AND doctor_id = ? AND estado != 'Cancelada'`,
-      [fecha_consulta, horario_consulta, doctor_id]
-    );
+    res.status(200).json(rows);
     
-    if (existingCita.length > 0) {
-      console.log('ERROR: Conflicto de horario encontrado');
-      return res.status(400).json({ 
-        message: 'Ya existe una cita agendada en esa fecha y hora con ese doctor' 
-      });
-    }
+  } catch (error) {
+    console.error('❌ Error en GET /pacientes:', error);
+    console.error('❌ Error stack:', error.stack);
     
-    console.log('No hay conflictos, creando cita...');
+    // Respuesta de error más detallada
+    res.status(500).json({ 
+      error: 'Error interno del servidor al obtener pacientes',
+      message: error.message,
+      code: 'PACIENTES_FETCH_ERROR'
+    });
+  }
+});
+
+// 🔧 ENDPOINT DE PRUEBA PARA VERIFICAR CONECTIVIDAD
+router.get('/test', verifyToken, async (req, res) => {
+  try {
+    console.log('🧪 Test endpoint llamado');
+    console.log('👤 Usuario test:', req.user?.nombre, 'Rol:', req.user?.rol);
     
-    // Crear la cita
-    const [result] = await pool.execute(
-      `INSERT INTO citas (paciente_id, doctor_id, fecha_cita, hora_cita, tipo_cita, estado, observaciones, fecha_creacion)
-       VALUES (?, ?, ?, ?, ?, 'Programada', ?, NOW())`,
-      [finalPacienteId, doctor_id, fecha_consulta, horario_consulta, tipoCitaDB, observaciones || `Cita para: ${nombrePacienteParaCita}`]
-    );
+    // Prueba de conectividad básica
+    const [result] = await pool.execute('SELECT 1 as test_connection');
     
-    console.log('Cita creada exitosamente con ID:', result.insertId);
-    
-    res.status(201).json({
-      message: 'Cita agendada exitosamente',
-      citaId: result.insertId,
-      paciente: nombrePacienteParaCita
+    res.json({
+      success: true,
+      message: 'Conexión exitosa',
+      user: {
+        id: req.user?.id,
+        nombre: req.user?.nombre,
+        rol: req.user?.rol
+      },
+      database: result[0],
+      timestamp: new Date().toISOString()
     });
     
   } catch (error) {
-    console.error('ERROR COMPLETO al agendar cita:', error);
-    res.status(500).json({ message: 'Error al agendar la cita: ' + error.message });
+    console.error('❌ Error en test endpoint:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 });
 
-// GET - Obtener todas las citas
-router.get('/', async (req, res) => {
-  try {
-    const [rows] = await pool.execute(
-      `SELECT 
-        c.id,
-        c.fecha_cita,
-        c.hora_cita,
-        c.tipo_cita,
-        c.estado,
-        c.observaciones,
-        p.nombre as paciente_nombre,
-        CONCAT(p.apellido_paterno, ' ', IFNULL(p.apellido_materno, '')) as paciente_apellido,
-        u.nombre as doctor_nombre,
-        CONCAT(u.apellido_paterno, ' ', IFNULL(u.apellido_materno, '')) as doctor_apellido
-      FROM citas c
-      JOIN pacientes p ON c.paciente_id = p.id
-      JOIN usuarios u ON c.doctor_id = u.id
-      ORDER BY c.fecha_cita DESC, c.hora_cita ASC`
-    );
-    res.json(rows);
-  } catch (error) {
-    console.error('Error al obtener citas:', error);
-    res.status(500).json({ message: 'Error al obtener citas' });
-  }
-});
-
-// GET - Obtener citas de hoy
-router.get('/hoy', async (req, res) => {
-  try {
-    const [rows] = await pool.execute(
-      `SELECT 
-        c.id,
-        c.hora_cita,
-        c.tipo_cita,
-        c.estado,
-        p.nombre as paciente_nombre,
-        CONCAT(p.apellido_paterno, ' ', IFNULL(p.apellido_materno, '')) as paciente_apellido,
-        u.nombre as doctor_nombre,
-        CONCAT(u.apellido_paterno, ' ', IFNULL(u.apellido_materno, '')) as doctor_apellido
-      FROM citas c
-      JOIN pacientes p ON c.paciente_id = p.id
-      JOIN usuarios u ON c.doctor_id = u.id
-      WHERE DATE(c.fecha_cita) = CURDATE()
-      ORDER BY c.hora_cita ASC`
-    );
-    res.json(rows);
-  } catch (error) {
-    console.error('Error al obtener citas de hoy:', error);
-    res.status(500).json({ message: 'Error al obtener citas de hoy' });
-  }
-});
-
-// GET - Verificar disponibilidad de horario
-router.get('/disponibilidad/:fecha/:hora/:doctorId', async (req, res) => {
-  try {
-    const { fecha, hora, doctorId } = req.params;
-    
-    const [rows] = await pool.execute(
-      `SELECT id FROM citas 
-       WHERE fecha_cita = ? AND hora_cita = ? AND doctor_id = ? AND estado != 'Cancelada'`,
-      [fecha, hora, doctorId]
-    );
-    
-    res.json({ disponible: rows.length === 0 });
-  } catch (error) {
-    console.error('Error al verificar disponibilidad:', error);
-    res.status(500).json({ message: 'Error al verificar disponibilidad' });
-  }
-});
-
-// PUT - Actualizar estado de cita
-router.put('/:id/estado', async (req, res) => {
+// Endpoint para convertir paciente temporal a activo
+router.put('/convertir-temporal/:id', verifyToken, verifyPacientesAccess, async (req, res) => {
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+  
   try {
     const { id } = req.params;
-    const { estado } = req.body;
+    const updateData = req.body;
     
-    const estadosValidos = ['Programada', 'Confirmada', 'En_Proceso', 'Completada', 'Cancelada', 'No_Asistio'];
-    if (!estadosValidos.includes(estado)) {
-      return res.status(400).json({ message: 'Estado no válido' });
+    console.log('🔄 Convirtiendo paciente temporal ID:', id);
+    console.log('📋 Datos a actualizar:', updateData);
+    
+    // Verificar que el paciente temporal existe
+    const [existing] = await connection.execute(
+      'SELECT * FROM pacientes WHERE id = ? AND estado = ? AND activo = 1', 
+      [id, 'Temporal']
+    );
+    
+    if (existing.length === 0) {
+      await connection.rollback();
+      connection.release();
+      return res.status(404).json({ error: 'Paciente temporal no encontrado' });
     }
     
-    await pool.execute(
-      'UPDATE citas SET estado = ?, fecha_actualizacion = NOW() WHERE id = ?',
-      [estado, id]
-    );
+    // Actualizar el paciente temporal a activo
+    const fields = Object.keys(updateData).filter(key => updateData[key] !== undefined && key !== 'id');
     
-    res.json({ message: 'Estado de cita actualizado exitosamente' });
+    if (fields.length === 0) {
+      await connection.rollback();
+      connection.release();
+      return res.status(400).json({ error: 'No hay campos para actualizar' });
+    }
+    
+    // Agregar estado = 'Activo' a la actualización
+    fields.push('estado');
+    updateData.estado = 'Activo';
+    
+    const setClause = fields.map(field => `${field} = ?`).join(', ');
+    const values = fields.map(field => updateData[field]);
+    values.push(id);
+    
+    const query = `UPDATE pacientes SET ${setClause}, fecha_actualizacion = NOW() WHERE id = ?`;
+    
+    console.log('🔧 Query de actualización:', query);
+    console.log('📋 Valores:', values);
+    
+    await connection.execute(query, values);
+    
+    await connection.commit();
+    connection.release();
+    
+    res.json({ 
+      message: 'Paciente convertido exitosamente a activo',
+      pacienteId: id,
+      accion: 'convertido'
+    });
+    
   } catch (error) {
-    console.error('Error al actualizar estado de cita:', error);
-    res.status(500).json({ message: 'Error al actualizar estado de cita' });
+    await connection.rollback();
+    connection.release();
+    console.error('❌ Error al convertir paciente temporal:', error);
+    res.status(500).json({ 
+      error: 'Error interno del servidor al convertir paciente',
+      message: error.message 
+    });
   }
 });
 
-// GET - Obtener citas de un mes específico
-router.get('/mes/:year/:month', async (req, res) => {
+// Obtener historial clínico de un paciente
+router.get('/:id/historial', verifyToken, verifyPacientesAccess, async (req, res) => {
   try {
-    const { year, month } = req.params;
+    const { id } = req.params;
     
-    const [rows] = await pool.execute(
-      `SELECT 
-        c.id,
-        c.fecha_cita,
-        c.hora_cita,
-        c.tipo_cita,
-        c.estado,
-        p.nombre as paciente_nombre,
-        CONCAT(p.apellido_paterno, ' ', IFNULL(p.apellido_materno, '')) as paciente_apellido
-      FROM citas c
-      JOIN pacientes p ON c.paciente_id = p.id
-      WHERE YEAR(c.fecha_cita) = ? AND MONTH(c.fecha_cita) = ?
-      ORDER BY c.fecha_cita ASC, c.hora_cita ASC`,
-      [year, month]
+    console.log('📋 Obteniendo historial para paciente ID:', id);
+    
+    // Obtener datos del paciente
+    const [pacienteResult] = await pool.execute(
+      'SELECT * FROM pacientes WHERE id = ? AND activo = TRUE', 
+      [id]
     );
-    res.json(rows);
-  } catch (error) {
-    console.error('Error al obtener citas del mes:', error);
-    res.status(500).json({ message: 'Error al obtener citas del mes' });
+    
+    if (pacienteResult.length === 0) {
+      return res.status(404).json({ error: 'Paciente no encontrado' });
+    }
+    
+    // Obtener historial clínico
+    const [historialResult] = await pool.execute(
+      `SELECT h.*, 
+              u.nombre as doctor_nombre, 
+              u.apellido_paterno as doctor_apellido,
+              u.especialidad as doctor_especialidad
+       FROM historial_clinico h
+       LEFT JOIN usuarios u ON h.doctor_id = u.id 
+       WHERE h.paciente_id = ?
+       ORDER BY h.fecha_consulta DESC`,
+      [id]
+    );
+    
+    // Parsear campos JSON si existen
+    const historialParsed = historialResult.map(h => {
+      const camposJSON = [
+        'motivo_consulta',
+        'antecedentes_heredo_familiares', 
+        'antecedentes_personales_no_patologicos',
+        'antecedentes_personales_patologicos',
+        'examen_extrabucal',
+        'examen_intrabucal',
+        'auxiliares_diagnostico'
+      ];
+      
+      camposJSON.forEach(campo => {
+        if (h[campo]) {
+          try {
+            h[campo] = JSON.parse(h[campo]);
+          } catch (e) {
+            console.error(`Error parsing ${campo}:`, e);
+          }
+        }
+      });
+      
+      return h;
+    });
+    
+    res.json({
+      success: true,
+      paciente: pacienteResult[0],
+      historial: historialParsed
+    });
+    
+  } catch (err) {
+    console.error('❌ Error al obtener historial:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// GET - Obtener citas de un día específico
-router.get('/dia/:fecha', async (req, res) => {
+// Buscar pacientes
+router.get('/buscar', verifyToken, verifyPacientesAccess, async (req, res) => {
   try {
-    const { fecha } = req.params; // Formato: YYYY-MM-DD
+    const { q } = req.query;
     
-    const [rows] = await pool.execute(
-      `SELECT 
-        c.id,
-        c.fecha_cita,
-        c.hora_cita,
-        c.tipo_cita,
-        c.estado,
-        c.observaciones,
-        p.nombre as paciente_nombre,
-        CONCAT(p.apellido_paterno, ' ', IFNULL(p.apellido_materno, '')) as paciente_apellido,
-        u.nombre as doctor_nombre,
-        CONCAT(u.apellido_paterno, ' ', IFNULL(u.apellido_materno, '')) as doctor_apellido
-      FROM citas c
-      JOIN pacientes p ON c.paciente_id = p.id
-      JOIN usuarios u ON c.doctor_id = u.id
-      WHERE DATE(c.fecha_cita) = ?
-      ORDER BY c.hora_cita ASC`,
-      [fecha]
+    if (!q || q.trim().length < 2) {
+      return res.status(400).json({ error: 'El término de búsqueda debe tener al menos 2 caracteres' });
+    }
+    
+    const searchTerm = `%${q.trim()}%`;
+    const query = `
+      SELECT 
+        id, nombre, apellido_paterno, apellido_materno, 
+        fecha_nacimiento, telefono, correo_electronico, sexo
+      FROM pacientes 
+      WHERE activo = TRUE AND (
+        nombre LIKE ? OR 
+        apellido_paterno LIKE ? OR 
+        apellido_materno LIKE ? OR
+        CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) LIKE ?
+      )
+      ORDER BY apellido_paterno, apellido_materno, nombre
+      LIMIT 20
+    `;
+    
+    const [results] = await pool.execute(query, [searchTerm, searchTerm, searchTerm, searchTerm]);
+    res.json(results);
+    
+  } catch (err) {
+    console.error('❌ Error en búsqueda de pacientes:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Obtener paciente por ID
+router.get('/:id', verifyToken, verifyPacientesAccess, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const query = 'SELECT * FROM pacientes WHERE id = ? AND activo = TRUE';
+    const [results] = await pool.execute(query, [id]);
+    
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Paciente no encontrado' });
+    }
+    
+    res.json(results[0]);
+    
+  } catch (err) {
+    console.error('❌ Error al obtener paciente:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Crear nuevo paciente
+router.post('/', verifyToken, verifyPacientesAccess, [
+  body('nombre').notEmpty().withMessage('Nombre es requerido'),
+  body('apellido_paterno').notEmpty().withMessage('Apellido paterno es requerido'),
+  body('fecha_nacimiento').isDate().withMessage('Fecha de nacimiento válida requerida'),
+  body('sexo').isIn(['M', 'F']).withMessage('Sexo debe ser M o F'),
+  body('telefono').optional().isMobilePhone('es-MX').withMessage('Teléfono inválido'),
+  body('correo_electronico').optional().isEmail().withMessage('Email inválido')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
+    const {
+      nombre, apellido_paterno, apellido_materno, fecha_nacimiento,
+      lugar_nacimiento, lugar_procedencia, telefono, correo_electronico,
+      calle_numero, sexo, grupo_etnico, religion, rfc,
+      derecho_habiente, nombre_institucion
+    } = req.body;
+    
+    const query = `
+      INSERT INTO pacientes (
+        nombre, apellido_paterno, apellido_materno, fecha_nacimiento,
+        lugar_nacimiento, lugar_procedencia, telefono, correo_electronico,
+        calle_numero, sexo, grupo_etnico, religion, rfc,
+        derecho_habiente, nombre_institucion
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    const values = [
+      nombre, apellido_paterno, apellido_materno || null, fecha_nacimiento,
+      lugar_nacimiento || null, lugar_procedencia || null, telefono || null,
+      correo_electronico || null, calle_numero || null, sexo,
+      grupo_etnico || null, religion || null, rfc || null,
+      derecho_habiente || false, nombre_institucion || null
+    ];
+    
+    const [result] = await pool.execute(query, values);
+    
+    res.status(201).json({
+      message: 'Paciente creado exitosamente',
+      id: result.insertId
+    });
+    
+  } catch (err) {
+    console.error('❌ Error al crear paciente:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Actualizar paciente
+router.put('/:id', verifyToken, verifyPacientesAccess, [
+  body('nombre').optional().notEmpty().withMessage('Nombre no puede estar vacío'),
+  body('apellido_paterno').optional().notEmpty().withMessage('Apellido paterno no puede estar vacío'),
+  body('telefono').optional().isMobilePhone('es-MX').withMessage('Teléfono inválido'),
+  body('correo_electronico').optional().isEmail().withMessage('Email inválido')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    // Verificar que el paciente existe
+    const [existing] = await pool.execute('SELECT id FROM pacientes WHERE id = ? AND activo = TRUE', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ error: 'Paciente no encontrado' });
+    }
+
+    // Construir query dinámico para actualización
+    const fields = Object.keys(updateData).filter(key => updateData[key] !== undefined);
+    if (fields.length === 0) {
+      return res.status(400).json({ error: 'No hay campos para actualizar' });
+    }
+
+    const setClause = fields.map(field => `${field} = ?`).join(', ');
+    const values = fields.map(field => updateData[field]);
+    values.push(id);
+
+    const query = `UPDATE pacientes SET ${setClause}, fecha_actualizacion = NOW() WHERE id = ?`;
+    await pool.execute(query, values);
+
+    res.json({ message: 'Paciente actualizado exitosamente' });
+    
+  } catch (err) {
+    console.error('❌ Error al actualizar paciente:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// PUT - Actualizar paciente temporal
+router.put('/temporales/:id', verifyToken, verifyPacientesAccess, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre_completo, telefono, observaciones } = req.body;
+    
+    const [result] = await pool.execute(
+      `UPDATE pacientes_temporales 
+       SET nombre_completo = ?, telefono = ?, observaciones = ?, fecha_actualizacion = NOW()
+       WHERE id = ? AND activo = 1`,
+      [nombre_completo, telefono, observaciones, id]
     );
-    res.json(rows);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Paciente temporal no encontrado' });
+    }
+    
+    res.json({ message: 'Paciente temporal actualizado exitosamente' });
   } catch (error) {
-    console.error('Error al obtener citas del día:', error);
-    res.status(500).json({ message: 'Error al obtener citas del día' });
+    console.error('Error al actualizar paciente temporal:', error);
+    res.status(500).json({ message: 'Error al actualizar paciente temporal' });
+  }
+});
+
+// POST - Convertir paciente temporal a permanente
+router.post('/convertir-temporal', verifyToken, verifyPacientesAccess, async (req, res) => {
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+  
+  try {
+    const {
+      nombre, apellido_paterno, apellido_materno, fecha_nacimiento,
+      telefono, email, direccion, contacto_emergencia, telefono_emergencia,
+      observaciones_medicas, alergias, medicamentos_actuales, paciente_temporal_id
+    } = req.body;
+    
+    // Crear el paciente permanente
+    const [pacienteResult] = await connection.execute(
+      `INSERT INTO pacientes (
+        nombre, apellido_paterno, apellido_materno, fecha_nacimiento,
+        telefono, email, direccion, contacto_emergencia, telefono_emergencia,
+        observaciones_medicas, alergias, medicamentos_actuales, fecha_registro
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [
+        nombre, apellido_paterno, apellido_materno, fecha_nacimiento,
+        telefono, email, direccion, contacto_emergencia, telefono_emergencia,
+        observaciones_medicas, alergias, medicamentos_actuales
+      ]
+    );
+    
+    const nuevoPacienteId = pacienteResult.insertId;
+    
+    // Actualizar todas las citas del paciente temporal para que apunten al nuevo paciente permanente
+    await connection.execute(
+      `UPDATE citas 
+       SET paciente_id = ?, paciente_temporal_id = NULL 
+       WHERE paciente_temporal_id = ?`,
+      [nuevoPacienteId, paciente_temporal_id]
+    );
+    
+    // Desactivar el paciente temporal
+    await connection.execute(
+      'UPDATE pacientes_temporales SET activo = 0 WHERE id = ?',
+      [paciente_temporal_id]
+    );
+    
+    await connection.commit();
+    connection.release();
+    
+    res.status(201).json({
+      message: 'Paciente convertido exitosamente',
+      pacienteId: nuevoPacienteId,
+      citasActualizadas: true
+    });
+    
+  } catch (error) {
+    await connection.rollback();
+    connection.release();
+    console.error('Error al convertir paciente temporal:', error);
+    res.status(500).json({ message: 'Error al convertir paciente temporal: ' + error.message });
+  }
+});
+
+// Desactivar paciente (soft delete)
+router.delete('/:id', verifyToken, verifyPacientesAccess, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [result] = await pool.execute(
+      'UPDATE pacientes SET activo = FALSE, fecha_actualizacion = NOW() WHERE id = ? AND activo = TRUE', 
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Paciente no encontrado' });
+    }
+    
+    res.json({ message: 'Paciente desactivado exitosamente' });
+    
+  } catch (err) {
+    console.error('❌ Error al desactivar paciente:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 

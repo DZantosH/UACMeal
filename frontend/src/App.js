@@ -7,7 +7,8 @@ import PanelPrincipal from './pages/PanelPrincipal';
 import Pacientes from './pages/Pacientes';
 import Citas from './pages/Citas';
 import HistorialClinico from './historial/HistorialClinico';
-import './App.css'; // ← Solo App.css aquí
+import HistorialPacienteIndividual from './pages/HistorialPacienteIndividual';
+import './App.css';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -36,25 +37,25 @@ const AppContent = () => {
         />
         
         <Route 
-          path="/" 
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<PanelPrincipal />} />
-          <Route path="panel" element={<PanelPrincipal />} />
-          <Route path="pacientes" element={<Pacientes />} />
-          
-          {/* ✅ RUTA: Historial sin parámetro */}
-          <Route path="historial-clinico" element={<HistorialClinico />} />
-          
-          {/* ✅ RUTA: Historial con parámetro */}
-          <Route path="historial-clinico/:pacienteId" element={<HistorialClinico />} />
-          
-          <Route path="citas" element={<Citas />} />
-        </Route>
+  path="/" 
+  element={
+    <ProtectedRoute>
+      <Layout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<PanelPrincipal />} />
+  <Route path="panel" element={<PanelPrincipal />} />
+  <Route path="pacientes" element={<Pacientes />} />
+  
+  {/* 📋 RUTA: Lista general de historiales */}
+  <Route path="historial-clinico" element={<HistorialClinico />} />
+  
+  {/* 📋 RUTA: Historial individual de paciente */}
+  <Route path="pacientes/:pacienteId/historial" element={<HistorialPacienteIndividual />} />
+  
+  <Route path="citas" element={<Citas />} />
+</Route>
         
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
